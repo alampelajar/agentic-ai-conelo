@@ -1,0 +1,316 @@
+{
+  "dashboard": "Dasbor",
+  "overview": "Ringkasan",
+  "activity": "Aktivitas",
+  "workflow": "Alur Kerja",
+  "newTask": "Tugas Baru",
+
+  "runningAgents": "Agent yang Berjalan",
+  "FailedTask": "Tugas Gagal",
+  "completedTasks": "Tugas Selesai",
+  "activeWorkflows": "Alur Kerja Aktif",
+  "averageResponseTime": "Rata-rata Waktu Respons",
+  "recentTasks": "Tugas Terbaru",
+  "workflowActivity": "Aktivitas Alur Kerja",
+  "agentsRunning": "2 Agent Berjalan",
+  "Second": "90 Detik",
+  "TaskCompleted": "180 Tugas Selesai",
+
+  "agenticAI": "Agentic AI",
+  "aiOverview": "Ringkasan AI",
+  "aiChat": "AI Chat",
+  "aiAssistant": "Asisten AI",
+  "agents": "Daftar Agent",
+  "tasks": "Tugas",
+  "tools": "Tools",
+  "other": "Lainnya",
+
+  "settings": "Pengaturan",
+  "profile": "Profil",
+  "account": "Akun",
+  "appearance": "Tampilan",
+  "notifications": "Notifikasi",
+  "display": "Display",
+  "documentation": "Dokumentasi",
+
+  "aiWorkspace": "Ruang Kerja AI",
+  "goodAfternoon": "Selamat Siang",
+  "dashboardDescription": "Pantau Agent AI, tugas, dan alur kerja dari satu tempat.",
+
+  "startAITask": "Mulai Tugas AI",
+  "activeTasks": "Tugas Aktif",
+  "completed": "Selesai",
+
+  "activeAgentsDescription": "3 sedang aktif",
+  "runningTasksDescription": "4 sedang berjalan",
+  "runningWorkflowsDescription": "6 sedang berjalan",
+  "completedTasksDescription": "Tugas yang telah selesai",
+
+  "agentsTrend": "+2 minggu ini",
+  "tasksTrend": "+18% dari kemarin",
+  "workflowTrend": "+5 minggu ini",
+  "completedTrend": "+24% bulan ini",
+
+  "activeAgents": "Agent Aktif",
+  "activeAgentsDescriptionLong": "Agent AI dan progresnya saat ini.",
+  "viewAll": "Lihat Semua",
+  "currentProgress": "Progres Saat Ini",
+
+  "quickActions": "Aksi Cepat",
+  "quickActionsDescription": "Mulai bekerja dengan Agent AI.",
+
+  "createAIGoal": "Buat Tujuan AI",
+  "createAIGoalDescription": "Berikan tujuan yang harus dicapai AI",
+
+  "manageAgents": "Kelola Agent",
+  "manageAgentsDescription": "Lihat dan konfigurasi Agent AI",
+
+  "viewTasks": "Lihat Tugas",
+  "viewTasksDescription": "Pantau tugas AI saat ini",
+
+  "viewWorkflows": "Lihat Alur Kerja",
+  "viewWorkflowsDescription": "Pantau tahapan eksekusi AI",
+
+  "currentWorkflow": "Alur Kerja Saat Ini",
+  "agenticAIPrototype": "Prototype Agentic AI",
+  "overallProgress": "Progres Keseluruhan",
+  "codingInProgress": "Agent sedang mengerjakan Coding.",
+
+  "goal": "Tujuan",
+  "planning": "Perencanaan",
+  "coding": "Coding",
+  "testing": "Pengujian",
+  "done": "Selesai",
+
+  "goalDescription": "Menentukan tujuan",
+  "planningDescription": "Membuat rencana",
+  "codingDescription": "Menulis kode",
+  "testingDescription": "Menguji hasil",
+  "doneDescription": "Hasil telah selesai",
+
+  "recentActivity": "Aktivitas Terbaru",
+  "recentActivityDescription": "Aktivitas terbaru dari Agent AI.",
+
+  "whatAccomplish": "Apa yang ingin kamu capai?",
+  "workflowDescription": "Berikan tujuan kepada Agent AI dan biarkan agent merencanakan, menjalankan, menguji, dan menyelesaikan alur kerja.",
+  "startNewWorkflow": "Mulai Alur Kerja Baru",
+
+  "agentPage": {
+    "title": "Agent AI",
+    "subtitle": "Kelola dan pantau Agent AI kamu.",
+
+    "create": "Buat Agent",
+
+    "total": "Total Agent",
+    "totalDescription": "Agent AI yang dikonfigurasi",
+
+    "running": "Berjalan",
+    "runningDescription": "Agent yang sedang bekerja",
+
+    "thinking": "Berpikir",
+    "thinkingDescription": "Agent sedang memproses tujuan",
+
+    "activeTasks": "Tugas Aktif",
+    "activeTasksDescription": "Tugas yang diberikan kepada Agent",
+
+    "search": "Cari Agent...",
+    "allStatus": "Semua Status",
+    "idle": "Diam",
+    "offline": "Offline",
+
+    "currentProgress": "Progres Saat Ini",
+    "completed": "Selesai",
+
+    "viewDetails": "Lihat Detail",
+
+    "noAgents": "Agent tidak ditemukan",
+    "noAgentsDescription": "Coba ubah pencarian atau filter status.",
+
+    "agentId": "ID Agent",
+    "management": "Manajemen Agent"
+  },
+
+  "status": {
+    "running": "Berjalan",
+    "thinking": "Berpikir",
+    "idle": "Diam"
+  },
+
+  "chat": {
+    "title": "AI Chat",
+    "subtitle": "Berinteraksi dengan Agent AI",
+
+    "newGoal": "Tujuan Baru",
+    "recentGoals": "Tujuan Terbaru",
+
+    "placeholder": "Jelaskan apa yang ingin dilakukan oleh Agent AI...",
+
+    "send": "Kirim",
+
+    "agentWorkflow": "Alur Kerja Agent",
+    "agentReady": "Siap",
+    "agentSettings": "Pengaturan Agent",
+
+    "prototypeNotice": "Respons AI disimulasikan dalam prototype ini."
+  },
+
+  "agenticPage": {
+    "title": "Ruang Kerja AI",
+    "subtitle": "Pilih Agent dan berikan tujuan yang ingin kamu capai.",
+
+    "activeAgent": "Agent Aktif",
+    "noAgentSelected": "Belum Ada Agent yang Dipilih",
+
+    "ready": "Siap",
+    "working": "Bekerja",
+
+    "selectAgent": "Pilih Agent",
+    "selectAgentDescription": "Pilih Agent yang ingin digunakan.",
+
+    "goalTitle": "Apa yang ingin kamu capai?",
+    "goalPlaceholder": "Contoh: Buat fitur login menggunakan React...",
+
+    "chooseAgentFirst": "Pilih Agent terlebih dahulu",
+    "agent": "Agent",
+
+    "runAgent": "Jalankan Agent",
+    "agentRunning": "Agent Sedang Berjalan...",
+
+    "agentStatus": "Status Agent",
+
+    "currentTask": "Tugas Saat Ini",
+    "noActiveTask": "Tidak ada tugas aktif.",
+    "tasksCreated": "{{count}} tugas dibuat oleh Agent.",
+
+    "workflow": "Alur Kerja Agent",
+
+    "goal": "Tujuan",
+    "goalDescription": "Menentukan tujuan",
+
+    "planning": "Perencanaan",
+    "planningDescription": "Membuat rencana",
+
+    "coding": "Coding",
+    "codingDescription": "Menulis kode",
+
+    "testing": "Pengujian",
+    "testingDescription": "Menguji hasil",
+
+    "done": "Selesai",
+    "doneDescription": "Proses telah selesai",
+
+    "execution": "Eksekusi",
+
+    "inProgress": "Sedang Berjalan",
+    "completed": "Selesai",
+    "waiting": "Menunggu",
+
+    "activity": "Aktivitas Agent",
+    "messagePlaceholder": "Tulis pesan atau perintah...",
+
+    "checkStatus": "Cek Status Agent",
+    "explainWorkflow": "Jelaskan Alur Kerja",
+    "viewProgress": "Lihat Progres",
+
+    "prototype": "Prototype"
+  },
+
+  "tasksPage": {
+    "title": "Tugas AI",
+    "subtitle": "Kelola dan pantau tugas yang dijalankan oleh Agent AI.",
+
+    "searchPlaceholder": "Filter berdasarkan judul atau ID...",
+
+    "task": "Tugas",
+    "titleColumn": "Judul",
+    "status": "Status",
+    "priority": "Prioritas",
+
+    "noResults": "Tidak ada hasil.",
+
+    "statuses": {
+      "backlog": "Backlog",
+      "todo": "Akan Dikerjakan",
+      "in progress": "Sedang Berjalan",
+      "done": "Selesai",
+      "canceled": "Dibatalkan"
+    },
+
+    "priorities": {
+      "low": "Rendah",
+      "medium": "Sedang",
+      "high": "Tinggi",
+      "critical": "Kritis"
+    },
+
+    "openMenu": "Buka menu",
+    "edit": "Edit",
+    "makeCopy": "Buat salinan",
+    "favorite": "Favorit",
+    "labels": "Label",
+    "delete": "Hapus",
+
+    "bulk": {
+      "updateStatus": "Perbarui status",
+      "updatePriority": "Perbarui prioritas",
+      "exportTasks": "Ekspor tugas",
+      "deleteSelectedTasks": "Hapus tugas yang dipilih",
+
+      "loadingStatus": "Memperbarui status...",
+      "loadingPriority": "Memperbarui prioritas...",
+      "exporting": "Mengekspor tugas...",
+
+      "statusUpdated": "Status diperbarui menjadi \"{{status}}\" untuk {{count}} tugas.",
+      "priorityUpdated": "Prioritas diperbarui menjadi \"{{priority}}\" untuk {{count}} tugas.",
+      "exported": "{{count}} tugas berhasil diekspor ke CSV.",
+
+      "error": "Terjadi Kesalahan"
+    },
+
+    "deleteTitle": "Hapus tugas ini: {{id}}?",
+    "deleteMessage": "Tugas berikut telah dihapus:",
+    "deleteDescription": "Kamu akan menghapus tugas dengan ID",
+    "deleteWarning": "Tindakan ini tidak dapat dibatalkan.",
+
+    "updateTask": "Perbarui Tugas",
+    "createTask": "Buat Tugas",
+
+    "updateDescription": "Perbarui tugas dengan memberikan informasi yang diperlukan.",
+    "createDescription": "Tambahkan tugas baru dengan memberikan informasi yang diperlukan.",
+    "saveInstruction": "Klik simpan setelah selesai.",
+
+    "titleField": "Judul",
+    "titlePlaceholder": "Masukkan judul",
+    "selectStatus": "Pilih status",
+
+    "labelsList": {
+      "documentation": "Dokumentasi",
+      "feature": "Fitur",
+      "bug": "Bug"
+    },
+
+    "close": "Tutup",
+    "saveChanges": "Simpan Perubahan",
+
+    "validation": {
+      "title": "Judul wajib diisi.",
+      "status": "Silakan pilih status.",
+      "label": "Silakan pilih label.",
+      "priority": "Silakan pilih prioritas."
+    },
+
+    "import": {
+      "title": "Impor Tugas",
+      "description": "Impor tugas dengan cepat dari file CSV.",
+
+      "file": "File",
+      "close": "Tutup",
+      "import": "Impor",
+
+      "validationRequired": "Silakan unggah file.",
+      "validationFormat": "Silakan unggah file CSV.",
+
+      "success": "File berikut berhasil diimpor:"
+    }
+  }
+}

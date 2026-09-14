@@ -1,1 +1,13 @@
-.env
+# Environment files and local dependencies
+**/.env
+**/*.local
+**/node_modules/
+
+# Build output
+**/dist/
+**/dist-ssr/
+**/coverage/
+
+# Logs and editor files
+**/*.log
+.DS_Store

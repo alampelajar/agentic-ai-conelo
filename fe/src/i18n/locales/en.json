@@ -1,0 +1,317 @@
+{
+  "dashboard": "Dashboard",
+  "overview": "Overview",
+  "activity": "Activity",
+  "workflow": "Workflow",
+  "newTask": "New Task",
+
+  "runningAgents": "Running Agents",
+  "FailedTask": "Failed Tasks",
+  "completedTasks": "Completed Tasks",
+  "activeWorkflows": "Active Workflows",
+  "averageResponseTime": "Average Response Time",
+  "recentTasks": "Recent Tasks",
+  "workflowActivity": "Workflow Activity",
+  "agentsRunning": "2 Agents Running",
+  "Second": "90 Seconds",
+  "TaskCompleted": "180 Tasks Completed",
+
+  "agenticAI": "Agentic AI",
+  "aiOverview": "AI Overview",
+  "aiChat": "AI Chat",
+  "aiAssistant": "AI Assistant",
+  "agents": "Agents List",
+  "tasks": "Tasks",
+  "tools": "Tools",
+  "other": "Other",
+
+  "settings": "Settings",
+  "profile": "Profile",
+  "account": "Account",
+  "appearance": "Appearance",
+  "notifications": "Notifications",
+  "display": "Display",
+  "documentation": "Documentation",
+
+  "aiWorkspace": "AI Workspace",
+  "goodAfternoon": "Good Afternoon",
+  "dashboardDescription": "Monitor AI agents, tasks, and workflows from one place.",
+
+  "startAITask": "Start AI Task",
+  "activeTasks": "Active Tasks",
+  "completed": "Completed",
+
+  "activeAgentsDescription": "3 currently active",
+  "runningTasksDescription": "4 currently running",
+  "runningWorkflowsDescription": "6 currently running",
+  "completedTasksDescription": "Tasks completed",
+
+  "agentsTrend": "+2 this week",
+  "tasksTrend": "+18% from yesterday",
+  "workflowTrend": "+5 this week",
+  "completedTrend": "+24% this month",
+
+  "activeAgents": "Active Agents",
+  "activeAgentsDescriptionLong": "AI agents and their current progress.",
+  "viewAll": "View All",
+  "currentProgress": "Current Progress",
+
+  "quickActions": "Quick Actions",
+  "quickActionsDescription": "Start working with AI Agents.",
+
+  "createAIGoal": "Create AI Goal",
+  "createAIGoalDescription": "Give the AI a goal to achieve",
+
+  "manageAgents": "Manage Agents",
+  "manageAgentsDescription": "View and configure AI Agents",
+
+  "viewTasks": "View Tasks",
+  "viewTasksDescription": "Monitor current AI tasks",
+
+  "viewWorkflows": "View Workflows",
+  "viewWorkflowsDescription": "Monitor AI execution stages",
+
+  "currentWorkflow": "Current Workflow",
+  "agenticAIPrototype": "Agentic AI Prototype",
+  "overallProgress": "Overall Progress",
+  "codingInProgress": "Agent is working on Coding.",
+
+  "goal": "Goal",
+  "planning": "Planning",
+  "coding": "Coding",
+  "testing": "Testing",
+  "done": "Done",
+
+  "goalDescription": "Determine the goal",
+  "planningDescription": "Create a plan",
+  "codingDescription": "Write the code",
+  "testingDescription": "Test the result",
+  "doneDescription": "Completed result",
+
+  "recentActivity": "Recent Activity",
+  "recentActivityDescription": "Recent activity from AI Agents.",
+
+  "whatAccomplish": "What do you want to accomplish?",
+  "workflowDescription": "Give a goal to the AI Agent and let the agent plan, execute, test, and complete the workflow.",
+  "startNewWorkflow": "Start New Workflow",
+
+  "agentPage": {
+    "title": "AI Agents",
+    "subtitle": "Manage and monitor your AI Agents.",
+
+    "create": "Create Agent",
+
+    "total": "Total Agents",
+    "totalDescription": "Configured AI Agents",
+
+    "running": "Running",
+    "runningDescription": "Agents currently working",
+
+    "thinking": "Thinking",
+    "thinkingDescription": "Agents processing a goal",
+
+    "activeTasks": "Active Tasks",
+    "activeTasksDescription": "Tasks assigned to Agents",
+
+    "search": "Search Agent...",
+    "allStatus": "All Status",
+    "idle": "Idle",
+    "offline": "Offline",
+
+    "currentProgress": "Current Progress",
+    "completed": "Completed",
+
+    "viewDetails": "View Details",
+
+    "noAgents": "No agents found",
+    "noAgentsDescription": "Try changing your search or status filter.",
+
+    "agentId": "Agent ID",
+    "management": "Agent Management"
+  },
+
+  "status": {
+    "running": "Running",
+    "thinking": "Thinking",
+    "idle": "Idle"
+  },
+
+  "chat": {
+    "title": "AI Chat",
+    "subtitle": "Interact with AI Agent",
+
+    "newGoal": "New Goal",
+    "recentGoals": "Recent Goals",
+
+    "placeholder": "Describe what you want the AI Agent to do...",
+
+    "send": "Send",
+
+    "agentWorkflow": "Agent Workflow",
+    "agentReady": "Ready",
+    "agentSettings": "Agent Settings",
+
+    "prototypeNotice": "AI responses are simulated in this prototype."
+  },
+
+  "agenticPage": {
+    "title": "AI Workspace",
+    "subtitle": "Choose an Agent and provide a goal you want to accomplish.",
+
+    "activeAgent": "Active Agent",
+    "noAgentSelected": "No Agent Selected",
+
+    "ready": "Ready",
+    "working": "Working",
+
+    "selectAgent": "Select Agent",
+    "selectAgentDescription": "Choose an Agent to use.",
+
+    "goalTitle": "What do you want to accomplish?",
+    "goalPlaceholder": "Example: Build a login feature using React...",
+
+    "chooseAgentFirst": "Select an Agent first",
+    "agent": "Agent",
+
+    "runAgent": "Run Agent",
+    "agentRunning": "Agent Running...",
+
+    "agentStatus": "Agent Status",
+
+    "currentTask": "Current Task",
+    "noActiveTask": "There is no active task.",
+    "tasksCreated": "{{count}} tasks created by the Agent.",
+
+    "workflow": "Agent Workflow",
+
+    "goal": "Goal",
+    "goalDescription": "Determine the goal",
+
+    "planning": "Planning",
+    "planningDescription": "Create a plan",
+
+    "coding": "Coding",
+    "codingDescription": "Write the code",
+
+    "testing": "Testing",
+    "testingDescription": "Test the result",
+
+    "done": "Done",
+    "doneDescription": "The process is complete",
+
+    "execution": "Execution",
+
+    "inProgress": "In Progress",
+    "completed": "Completed",
+    "waiting": "Waiting",
+
+    "activity": "Agent Activity",
+    "messagePlaceholder": "Write a message or command...",
+
+    "checkStatus": "Check Agent Status",
+    "explainWorkflow": "Explain Workflow",
+    "viewProgress": "View Progress",
+
+    "prototype": "Prototype"
+  },
+
+  "tasksPage": {
+    "title": "AI Tasks",
+    "subtitle": "Manage and monitor tasks executed by AI Agents.",
+
+    "searchPlaceholder": "Filter by title or ID...",
+
+    "task": "Task",
+    "titleColumn": "Title",
+    "status": "Status",
+    "priority": "Priority",
+
+    "noResults": "No results.",
+
+    "statuses": {
+      "backlog": "Backlog",
+      "todo": "Todo",
+      "in progress": "In Progress",
+      "done": "Done",
+      "canceled": "Canceled"
+    },
+
+    "priorities": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "critical": "Critical"
+    },
+
+    "openMenu": "Open menu",
+    "edit": "Edit",
+    "makeCopy": "Make a copy",
+    "favorite": "Favorite",
+    "labels": "Labels",
+    "delete": "Delete",
+
+    "bulk": {
+      "updateStatus": "Update status",
+      "updatePriority": "Update priority",
+
+      "exportTasks": "Export tasks",
+      "deleteSelectedTasks": "Delete selected tasks",
+
+      "loadingStatus": "Updating status...",
+      "loadingPriority": "Updating priority...",
+      "exporting": "Exporting tasks...",
+
+      "statusUpdated": "Status updated to \"{{status}}\" for {{count}} tasks.",
+      "priorityUpdated": "Priority updated to \"{{priority}}\" for {{count}} tasks.",
+      "exported": "Exported {{count}} tasks to CSV.",
+
+      "error": "Error"
+    },
+
+    "deleteTitle": "Delete this task: {{id}}?",
+    "deleteMessage": "The following task has been deleted:",
+    "deleteDescription": "You are about to delete a task with the ID",
+    "deleteWarning": "This action cannot be undone.",
+
+    "updateTask": "Update Task",
+    "createTask": "Create Task",
+
+    "updateDescription": "Update the task by providing necessary info.",
+    "createDescription": "Add a new task by providing necessary info.",
+    "saveInstruction": "Click save when you're done.",
+
+    "titleField": "Title",
+    "titlePlaceholder": "Enter a title",
+    "selectStatus": "Select status",
+
+    "labelsList": {
+      "documentation": "Documentation",
+      "feature": "Feature",
+      "bug": "Bug"
+    },
+
+    "close": "Close",
+    "saveChanges": "Save changes",
+
+    "validation": {
+      "title": "Title is required.",
+      "status": "Please select a status.",
+      "label": "Please select a label.",
+      "priority": "Please choose a priority."
+    },
+
+    "import": {
+      "title": "Import Tasks",
+      "description": "Import tasks quickly from a CSV file.",
+
+      "file": "File",
+      "close": "Close",
+      "import": "Import",
+
+      "validationRequired": "Please upload a file.",
+      "validationFormat": "Please upload a CSV file.",
+
+      "success": "You have imported the following file:"
+    }
+  }
+}
