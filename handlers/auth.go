@@ -100,6 +100,7 @@ func Register(c *gin.Context) {
 		Name:     req.Name,
 		Email:    req.Email,
 		Password: string(hashedPassword),
+		Role:     "user",
 	}
 
 	if err := config.DB.Create(&user).Error; err != nil {
@@ -114,9 +115,11 @@ func Register(c *gin.Context) {
 		"ok":      true,
 		"message": "Registrasi berhasil",
 		"user": gin.H{
-			"id":    user.ID,
-			"name":  user.Name,
-			"email": user.Email,
+			"id":     user.ID,
+			"name":   user.Name,
+			"email":  user.Email,
+			"avatar": user.Avatar,
+			"role":   user.Role,
 		},
 	})
 }
@@ -169,9 +172,27 @@ func Login(c *gin.Context) {
 		return
 	}
 
+	// Jika role kosong karena user lama,
+	// anggap sebagai user biasa.
+	if user.Role == "" {
+		user.Role = "user"
+
+		if err := config.DB.
+			Model(&user).
+			Update("role", "user").
+			Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"ok":      false,
+				"message": "Gagal memperbarui role pengguna",
+			})
+			return
+		}
+	}
+
 	accessToken, err := utils.GenerateAccessToken(
 		user.ID,
 		user.Email,
+		user.Role,
 	)
 
 	if err != nil {
@@ -185,6 +206,7 @@ func Login(c *gin.Context) {
 	refreshToken, err := utils.GenerateRefreshToken(
 		user.ID,
 		user.Email,
+		user.Role,
 	)
 
 	if err != nil {
@@ -224,9 +246,11 @@ func Login(c *gin.Context) {
 		"message":      "Login berhasil",
 		"access_token": accessToken,
 		"user": gin.H{
-			"id":    user.ID,
-			"name":  user.Name,
-			"email": user.Email,
+			"id":     user.ID,
+			"name":   user.Name,
+			"email":  user.Email,
+			"avatar": user.Avatar,
+			"role":   user.Role,
 		},
 	})
 }
@@ -296,9 +320,25 @@ func Refresh(c *gin.Context) {
 		return
 	}
 
+	if user.Role == "" {
+		user.Role = "user"
+
+		if err := config.DB.
+			Model(&user).
+			Update("role", "user").
+			Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"ok":      false,
+				"message": "Gagal memperbarui role pengguna",
+			})
+			return
+		}
+	}
+
 	newAccessToken, err := utils.GenerateAccessToken(
 		user.ID,
 		user.Email,
+		user.Role,
 	)
 
 	if err != nil {
@@ -312,6 +352,7 @@ func Refresh(c *gin.Context) {
 	newRefreshToken, err := utils.GenerateRefreshToken(
 		user.ID,
 		user.Email,
+		user.Role,
 	)
 
 	if err != nil {
@@ -377,7 +418,9 @@ func Logout(c *gin.Context) {
 			).
 			First(&storedToken)
 
-		if result.Error == nil && storedToken.RevokedAt == nil {
+		if result.Error == nil &&
+			storedToken.RevokedAt == nil {
+
 			now := time.Now()
 			storedToken.RevokedAt = &now
 

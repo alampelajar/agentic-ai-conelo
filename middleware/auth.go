@@ -26,7 +26,10 @@ func AuthMiddleware() gin.HandlerFunc {
 
 		parts := strings.SplitN(authHeader, " ", 2)
 
-		if len(parts) != 2 || parts[0] != "Bearer" || parts[1] == "" {
+		if len(parts) != 2 ||
+			parts[0] != "Bearer" ||
+			parts[1] == "" {
+
 			c.JSON(http.StatusUnauthorized, gin.H{
 				"ok":      false,
 				"message": "Format Authorization tidak valid",
@@ -72,6 +75,37 @@ func AuthMiddleware() gin.HandlerFunc {
 
 		c.Set("user_id", claims.UserID)
 		c.Set("user_email", claims.Email)
+		c.Set("user_role", claims.Role)
+
+		c.Next()
+	}
+}
+
+// AdminMiddleware memastikan hanya user dengan role admin
+// yang dapat mengakses endpoint admin.
+func AdminMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		roleValue, exists := c.Get("user_role")
+
+		if !exists {
+			c.JSON(http.StatusForbidden, gin.H{
+				"ok":      false,
+				"message": "Role pengguna tidak ditemukan",
+			})
+			c.Abort()
+			return
+		}
+
+		role, ok := roleValue.(string)
+
+		if !ok || role != "admin" {
+			c.JSON(http.StatusForbidden, gin.H{
+				"ok":      false,
+				"message": "Akses hanya untuk admin",
+			})
+			c.Abort()
+			return
+		}
 
 		c.Next()
 	}

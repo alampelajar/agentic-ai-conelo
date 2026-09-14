@@ -1,11 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"log"
+	"net/http"
 	"os"
-	"time"
+	"strings"
 
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 
@@ -15,64 +16,339 @@ import (
 )
 
 func main() {
-	if err := godotenv.Load(); err != nil {
-		log.Println("Warning: file .env tidak ditemukan")
+	// ============================================================
+	// LOAD ENVIRONMENT
+	// ============================================================
+
+	err := godotenv.Load()
+
+	if err != nil {
+		fmt.Println(
+			"Peringatan: file .env tidak ditemukan, menggunakan environment system.",
+		)
+	} else {
+		fmt.Println("✓ File .env berhasil dimuat")
 	}
+
+	// ============================================================
+	// GOOGLE CLIENT ID
+	// ============================================================
+
+	if strings.TrimSpace(
+		os.Getenv("GOOGLE_CLIENT_ID"),
+	) == "" {
+		fmt.Println(
+			"⚠ GOOGLE_CLIENT_ID belum diatur",
+		)
+	} else {
+		fmt.Println(
+			"✓ GOOGLE_CLIENT_ID berhasil dimuat",
+		)
+	}
+
+	// ============================================================
+	// AI ENCRYPTION KEY
+	// ============================================================
+
+	if strings.TrimSpace(
+		os.Getenv("AI_ENCRYPTION_KEY"),
+	) == "" {
+		fmt.Println(
+			"⚠ AI_ENCRYPTION_KEY belum diatur. Penambahan custom provider tidak akan bisa mengenkripsi API key.",
+		)
+	}
+
+	// ============================================================
+	// DATABASE
+	// ============================================================
 
 	config.ConnectDatabase()
 
-	r := gin.Default()
+	// ============================================================
+	// GIN ROUTER
+	// ============================================================
 
-	// CORS untuk frontend Agentic AI
-	r.Use(cors.New(cors.Config{
-		AllowOrigins: []string{
-			"http://localhost:5173",
-		},
-		AllowMethods: []string{
-			"GET",
-			"POST",
-			"PUT",
-			"PATCH",
-			"DELETE",
-			"OPTIONS",
-		},
-		AllowHeaders: []string{
-			"Origin",
-			"Content-Type",
-			"Accept",
-			"Authorization",
-		},
-		AllowCredentials: true,
-		MaxAge: 12 * time.Hour,
-	}))
+	router := gin.Default()
 
-	api := r.Group("/api")
+	// ============================================================
+	// CORS
+	// ============================================================
+
+	router.Use(func(c *gin.Context) {
+		origin := c.GetHeader("Origin")
+
+		allowedOrigins := map[string]bool{
+			"http://localhost:5173": true,
+			"http://localhost:5174": true,
+		}
+
+		if allowedOrigins[origin] {
+			c.Header(
+				"Access-Control-Allow-Origin",
+				origin,
+			)
+		}
+
+		c.Header(
+			"Access-Control-Allow-Credentials",
+			"true",
+		)
+
+		c.Header(
+			"Access-Control-Allow-Headers",
+			"Content-Type, Authorization",
+		)
+
+		c.Header(
+			"Access-Control-Allow-Methods",
+			"GET, POST, PUT, PATCH, DELETE, OPTIONS",
+		)
+
+		if c.Request.Method == http.MethodOptions {
+			c.AbortWithStatus(
+				http.StatusNoContent,
+			)
+
+			return
+		}
+
+		c.Next()
+	})
+
+	// ============================================================
+	// API
+	// ============================================================
+
+	api := router.Group("/api")
+
+	// ============================================================
+	// AUTH
+	// ============================================================
+
+	auth := api.Group("/auth")
 	{
-		// Auth
-		auth := api.Group("/auth")
-		{
-			auth.POST("/register", handlers.Register)
-			auth.POST("/login", handlers.Login)
-			auth.POST("/refresh", handlers.Refresh)
-			auth.POST("/logout", handlers.Logout)
-		}
+		auth.POST(
+			"/register",
+			handlers.Register,
+		)
 
-		// Protected routes
-		protected := api.Group("")
-		protected.Use(middleware.AuthMiddleware())
-		{
-			protected.GET("/me", handlers.Me)
-		}
+		auth.POST(
+			"/login",
+			handlers.Login,
+		)
+
+		auth.POST(
+			"/google",
+			handlers.GoogleLogin,
+		)
+
+		auth.POST(
+			"/refresh",
+			handlers.Refresh,
+		)
+
+		auth.POST(
+			"/logout",
+			handlers.Logout,
+		)
 	}
 
+	// ============================================================
+	// PROTECTED ROUTES
+	// ============================================================
+
+	protected := api.Group("")
+
+	protected.Use(
+		middleware.AuthMiddleware(),
+	)
+
+	{
+		// ========================================================
+		// CURRENT USER
+		// ========================================================
+
+		protected.GET(
+			"/me",
+			handlers.Me,
+		)
+
+		// ========================================================
+		// AGENTIC
+		// ========================================================
+
+		protected.POST(
+			"/agent/plan",
+			handlers.AgentPlan,
+		)
+
+		protected.GET(
+			"/agents",
+			handlers.GetAgents,
+		)
+
+		protected.GET(
+			"/agents/:id",
+			handlers.GetAgent,
+		)
+
+		// ========================================================
+		// CHAT
+		// ========================================================
+
+		protected.POST(
+			"/chat",
+			handlers.Chat,
+		)
+
+		// ========================================================
+		// GENERATOR
+		// ========================================================
+
+		protected.POST(
+			"/generator/landing-page",
+			handlers.GenerateLandingPage,
+		)
+
+		// ========================================================
+		// AI PROVIDERS
+		// ========================================================
+
+		// GET PROVIDERS
+		protected.GET(
+			"/ai/providers",
+			handlers.GetAIProviders,
+		)
+
+		// CREATE PROVIDER
+		protected.POST(
+			"/ai/providers",
+			handlers.CreateAIProvider,
+		)
+
+		// TEST CONNECTION
+		protected.POST(
+			"/ai/providers/test",
+			handlers.TestAIProviderConnection,
+		)
+
+		// UPDATE PROVIDER
+		protected.PUT(
+			"/ai/providers/:id",
+			handlers.UpdateAIProvider,
+		)
+
+		// DELETE PROVIDER
+		protected.DELETE(
+			"/ai/providers/:id",
+			handlers.DeleteAIProvider,
+		)
+
+		// ========================================================
+		// AI MODELS
+		// ========================================================
+
+		// GET ALL MODELS
+		protected.GET(
+			"/ai/models",
+			handlers.GetAIModels,
+		)
+
+		// CREATE MODEL
+		protected.POST(
+			"/ai/models",
+			handlers.CreateAIModel,
+		)
+
+		// UPDATE MODEL
+		protected.PUT(
+			"/ai/models/:id",
+			handlers.UpdateAIModel,
+		)
+
+		// ========================================================
+		// REMOVE MODEL FROM ONE AGENT
+		//
+		// Ini hanya menghapus relasi:
+		//
+		// agent_models
+		//
+		// Model AI tetap ada dan Agent lain yang memakai model
+		// tersebut tidak akan terpengaruh.
+		// ========================================================
+
+		protected.DELETE(
+			"/ai/models/:id/agents",
+			handlers.RemoveModelFromAgent,
+		)
+
+		// ========================================================
+		// DELETE MODEL
+		//
+		// Ini menghapus model AI beserta relasinya.
+		// ========================================================
+
+		protected.DELETE(
+			"/ai/models/:id",
+			handlers.DeleteAIModel,
+		)
+	}
+
+	// ============================================================
+	// ADMIN
+	// ============================================================
+
+	admin := api.Group("/admin")
+
+	admin.Use(
+		middleware.AuthMiddleware(),
+	)
+
+	{
+		admin.GET(
+			"/users",
+			handlers.AdminGetUsers,
+		)
+
+		admin.POST(
+			"/users",
+			handlers.AdminCreateUser,
+		)
+
+		admin.PUT(
+			"/users/:id",
+			handlers.AdminUpdateUser,
+		)
+
+		admin.DELETE(
+			"/users/:id",
+			handlers.AdminDeleteUser,
+		)
+	}
+
+	// ============================================================
+	// PORT
+	// ============================================================
+
 	port := os.Getenv("PORT")
+
 	if port == "" {
 		port = "8080"
 	}
 
-	log.Println("Backend berjalan di http://localhost:" + port)
+	fmt.Printf(
+		"Backend berjalan di http://localhost:%s\n",
+		port,
+	)
 
-	if err := r.Run(":" + port); err != nil {
-		log.Fatal(err)
+	// ============================================================
+	// RUN SERVER
+	// ============================================================
+
+	if err := router.Run(":" + port); err != nil {
+		log.Fatal(
+			"Gagal menjalankan server:",
+			err,
+		)
 	}
 }

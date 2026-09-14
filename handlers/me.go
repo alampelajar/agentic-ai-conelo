@@ -33,9 +33,10 @@ func Me(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"ok": true,
 		"user": gin.H{
-			"id":    user.ID,
-			"name":  user.Name,
-			"email": user.Email,
+			"id":     user.ID,
+			"name":   user.Name,
+			"email":  user.Email,
+			"avatar": user.Avatar,
 		},
 	})
 }
