@@ -40,7 +40,7 @@ export function AgentDetail() {
           </div>
 
           <div>
-            <p className="text-sm font-semibold">Code Builder</p>
+            <p className="text-sm font-semibold">{t("agentPage.codeBuilder")}</p>
 
             <p className="text-xs text-muted-foreground">
               {t("agentPage.management")}
@@ -85,7 +85,7 @@ export function AgentDetail() {
 
                   <div>
                     <div className="flex items-center gap-3">
-                      <h1 className="text-2xl font-bold">Code Builder</h1>
+                      <h1 className="text-2xl font-bold">{t("agentPage.codeBuilder")}</h1>
 
                       <Badge className="bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/10">
                         <span className="me-1.5 size-1.5 rounded-full bg-emerald-500" />
@@ -94,7 +94,7 @@ export function AgentDetail() {
                     </div>
 
                     <p className="mt-1 text-sm text-muted-foreground">
-                      Development · AG-001
+                      {t("agentPage.development")} · AG-001
                     </p>
 
                     <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
@@ -201,15 +201,15 @@ export function AgentDetail() {
               <CardContent className="space-y-4">
                 <InfoRow label={t("agentPage.agentId")} value="AG-001" />
 
-                <InfoRow label={t("agentPage.agentType")} value="Development" />
+                <InfoRow label={t("agentPage.agentType")} value={t("agentPage.development")} />
 
-                <InfoRow label={t("agentPage.agentModel")} value="AI Model" />
+                <InfoRow label={t("agentPage.agentModel")} value={t("agentPage.aiModel")} />
 
                 <InfoRow label={t("agentPage.createdAt")} value="12 Aug 2026" />
 
                 <InfoRow
                   label={t("agentPage.lastActivity")}
-                  value="2 minutes ago"
+                  value={t("agentPage.twoMinutesAgo")}
                 />
               </CardContent>
             </Card>

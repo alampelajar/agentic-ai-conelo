@@ -1017,9 +1017,9 @@ export function Agents() {
           />
 
           <AgentStat
-            title='Available Models'
+            title={t('agentPage.availableModelsStat')}
             value={totalModels}
-            description='Model yang tersedia untuk Agent'
+            description={t('agentPage.availableModelsDescription')}
             icon={Cpu}
             color='blue'
           />
@@ -1136,7 +1136,7 @@ export function Agents() {
                   </div>
 
                   <div>
-                    <h2 className='text-lg font-semibold'>Tambah Model AI</h2>
+                    <h2 className='text-lg font-semibold'>{t('agentPage.addModel.title')}</h2>
 
                     <p className='text-xs text-muted-foreground'>
                       Untuk Agent: {selectedAgentForModel.name}
@@ -1160,7 +1160,7 @@ export function Agents() {
             <div className='overflow-y-auto p-6'>
               <div className='space-y-5'>
                 <div className='space-y-2'>
-                  <label className='text-sm font-medium'>Provider</label>
+                  <label className='text-sm font-medium'>{t('agentPage.addModel.provider')}</label>
 
                   <Select
                     value={selectedProvider ? String(selectedProvider.id) : ''}
@@ -1192,7 +1192,7 @@ export function Agents() {
 
                 {selectedProvider && (
                   <div className='rounded-xl border bg-muted/20 p-4'>
-                    <p className='text-xs text-muted-foreground'>Base URL</p>
+                    <p className='text-xs text-muted-foreground'>{t('agentPage.addModel.baseUrl')}</p>
                     <p className='mt-1 text-sm font-medium break-all'>
                       {selectedProvider.base_url}
                     </p>
@@ -1202,7 +1202,7 @@ export function Agents() {
                 {/* API KEY */}
 
                 <div className='space-y-2'>
-                  <label className='text-sm font-medium'>API Key</label>
+                  <label className='text-sm font-medium'>{t('agentPage.addModel.apiKey')}</label>
 
                   <Input
                     type='password'
@@ -1225,7 +1225,7 @@ export function Agents() {
 
                 <div className='grid gap-5 md:grid-cols-2'>
                   <div className='space-y-2'>
-                    <label className='text-sm font-medium'>Model ID</label>
+                    <label className='text-sm font-medium'>{t('agentPage.addModel.modelId')}</label>
 
                     <Input
                       value={form.modelID}
@@ -1240,7 +1240,7 @@ export function Agents() {
                   {/* MODEL NAME */}
 
                   <div className='space-y-2'>
-                    <label className='text-sm font-medium'>Nama Model</label>
+                    <label className='text-sm font-medium'>{t('agentPage.addModel.modelName')}</label>
 
                     <Input
                       value={form.modelName}
@@ -1256,7 +1256,7 @@ export function Agents() {
                 {/* DESCRIPTION */}
 
                 <div className='space-y-2'>
-                  <label className='text-sm font-medium'>Deskripsi</label>
+                  <label className='text-sm font-medium'>{t('agentPage.addModel.description')}</label>
 
                   <textarea
                     value={form.description}
@@ -1398,7 +1398,7 @@ export function Agents() {
           <div className='w-full max-w-lg overflow-hidden rounded-2xl border border-border bg-background shadow-2xl'>
             <div className='flex items-center justify-between border-b px-6 py-5'>
               <div>
-                <h2 className='text-lg font-semibold'>Edit Model AI</h2>
+                <h2 className='text-lg font-semibold'>{t('agentPage.editModel.title')}</h2>
                 <p className='mt-1 text-xs text-muted-foreground'>
                   Perbarui konfigurasi model yang dipilih.
                 </p>
@@ -1416,7 +1416,7 @@ export function Agents() {
 
             <div className='space-y-5 p-6'>
               <div className='space-y-2'>
-                <label className='text-sm font-medium'>Model ID</label>
+                <label className='text-sm font-medium'>{t('agentPage.addModel.modelId')}</label>
 
                 <Input
                   value={editForm.modelID}
@@ -1432,7 +1432,7 @@ export function Agents() {
               </div>
 
               <div className='space-y-2'>
-                <label className='text-sm font-medium'>Nama Model</label>
+                <label className='text-sm font-medium'>{t('agentPage.addModel.modelName')}</label>
 
                 <Input
                   value={editForm.modelName}
@@ -1448,7 +1448,7 @@ export function Agents() {
               </div>
 
               <div className='space-y-2'>
-                <label className='text-sm font-medium'>Deskripsi</label>
+                <label className='text-sm font-medium'>{t('agentPage.addModel.description')}</label>
 
                 <textarea
                   value={editForm.description}
@@ -1472,7 +1472,7 @@ export function Agents() {
                   </div>
 
                   <div className='min-w-0'>
-                    <p className='text-xs text-muted-foreground'>Provider</p>
+                    <p className='text-xs text-muted-foreground'>{t('agentPage.addModel.provider')}</p>
 
                     <p className='truncate text-sm font-semibold'>
                       {selectedModelForEdit.provider?.name || 'Provider'}
@@ -1487,7 +1487,7 @@ export function Agents() {
 
               {editModelError && (
                 <div className='rounded-xl border border-destructive/20 bg-destructive/10 p-4'>
-                  <p className='text-sm font-medium text-destructive'>Gagal</p>
+                  <p className='text-sm font-medium text-destructive'>{t('agentPage.addModel.failed')}</p>
                   <p className='mt-1 text-xs text-muted-foreground'>
                     {editModelError}
                   </p>
@@ -1537,7 +1537,7 @@ export function Agents() {
         >
           <div className='w-full max-w-md overflow-hidden rounded-2xl border border-border bg-background shadow-2xl'>
             <div className='border-b px-6 py-5'>
-              <h2 className='text-lg font-semibold'>Lepas Model dari Agent?</h2>
+              <h2 className='text-lg font-semibold'>{t('agentPage.removeModel.title')}</h2>
               <p className='mt-1 text-sm text-muted-foreground'>
                 Model hanya akan dilepas dari Agent ini.
               </p>
@@ -1545,12 +1545,12 @@ export function Agents() {
 
             <div className='space-y-4 p-6'>
               <div className='rounded-xl border bg-muted/20 p-4'>
-                <p className='text-xs text-muted-foreground'>Model</p>
+                <p className='text-xs text-muted-foreground'>{t('agentPage.modelLabel')}</p>
                 <p className='mt-1 font-medium'>
                   {selectedModelForRemove.name}
                 </p>
 
-                <p className='mt-3 text-xs text-muted-foreground'>Agent</p>
+                <p className='mt-3 text-xs text-muted-foreground'>{t('agentPage.agentId')}</p>
                 <p className='mt-1 font-medium'>
                   {selectedAgentForRemove.name}
                 </p>
@@ -1562,7 +1562,7 @@ export function Agents() {
 
               {removeModelError && (
                 <div className='rounded-xl border border-destructive/20 bg-destructive/10 p-4'>
-                  <p className='text-sm font-medium text-destructive'>Gagal</p>
+                  <p className='text-sm font-medium text-destructive'>{t('agentPage.addModel.failed')}</p>
                   <p className='mt-1 text-xs text-muted-foreground'>
                     {removeModelError}
                   </p>
@@ -1613,7 +1613,7 @@ export function Agents() {
         >
           <div className='w-full max-w-md overflow-hidden rounded-2xl border border-border bg-background shadow-2xl'>
             <div className='border-b px-6 py-5'>
-              <h2 className='text-lg font-semibold'>Hapus Model AI?</h2>
+              <h2 className='text-lg font-semibold'>{t('agentPage.deleteModel.title')}</h2>
               <p className='mt-1 text-sm text-muted-foreground'>
                 Model akan dihapus secara permanen.
               </p>
@@ -1621,7 +1621,7 @@ export function Agents() {
 
             <div className='space-y-4 p-6'>
               <div className='rounded-xl border border-destructive/20 bg-destructive/5 p-4'>
-                <p className='text-xs text-muted-foreground'>Model</p>
+                <p className='text-xs text-muted-foreground'>{t('agentPage.modelLabel')}</p>
                 <p className='mt-1 font-semibold'>
                   {selectedModelForDelete.name}
                 </p>
@@ -1638,7 +1638,7 @@ export function Agents() {
 
               {deleteModelError && (
                 <div className='rounded-xl border border-destructive/20 bg-destructive/10 p-4'>
-                  <p className='text-sm font-medium text-destructive'>Gagal</p>
+                  <p className='text-sm font-medium text-destructive'>{t('agentPage.addModel.failed')}</p>
                   <p className='mt-1 text-xs text-muted-foreground'>
                     {deleteModelError}
                   </p>
@@ -1800,7 +1800,7 @@ function AgentCard({
           <div className='mb-3 flex items-center gap-2'>
             <Cpu className='size-4 text-primary' />
 
-            <span className='text-xs font-medium'>Models</span>
+            <span className='text-xs font-medium'>{t('agentPage.models')}</span>
 
             <span className='ml-auto text-xs text-muted-foreground'>
               {agent.models.length}
@@ -1825,7 +1825,7 @@ function AgentCard({
                   </span>
 
                   {model.is_system && (
-                    <span className='text-[9px] text-primary'>SYSTEM</span>
+                    <span className='text-[9px] text-primary'>{t('agentPage.system')}</span>
                   )}
 
                   {!model.is_system && (
@@ -1899,7 +1899,7 @@ function AgentCard({
               ))}
             </div>
           ) : (
-            <p className='text-xs text-muted-foreground'>Belum ada model.</p>
+            <p className='text-xs text-muted-foreground'>{t('agentPage.noModels')}</p>
           )}
 
           {/* ADD MODEL BUTTON */}

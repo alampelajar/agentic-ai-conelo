@@ -54,12 +54,7 @@ export function NavGroup({ title, items }: NavGroupProps) {
 
   return (
     <SidebarGroup>
-      {/* 
-        Group title sengaja TIDAK menggunakan t()
-        supaya "CHAT", "AI Workspace", dan "Settings"
-        tidak bentrok dengan object translation.
-      */}
-      <SidebarGroupLabel>{title}</SidebarGroupLabel>
+      <SidebarGroupLabel>{t(`navigation.groups.${title}`)}</SidebarGroupLabel>
 
       <SidebarMenu>
         {items.map((item) => {

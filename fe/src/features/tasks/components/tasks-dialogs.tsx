@@ -1,6 +1,5 @@
 import { useTranslation } from "react-i18next";
 
-import { showSubmittedData } from "@/lib/show-submitted-data";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { TasksImportDialog } from "./tasks-import-dialog";
 import { TasksMutateDrawer } from "./tasks-mutate-drawer";
@@ -9,7 +8,7 @@ import { useTasks } from "./tasks-provider";
 export function TasksDialogs() {
   const { t } = useTranslation();
 
-  const { open, setOpen, currentRow, setCurrentRow } = useTasks();
+  const { open, setOpen, currentRow, setCurrentRow, remove } = useTasks();
 
   return (
     <>
@@ -51,14 +50,14 @@ export function TasksDialogs() {
                 setCurrentRow(null);
               }, 500);
             }}
-            handleConfirm={() => {
-              setOpen(null);
-
-              setTimeout(() => {
+            handleConfirm={async () => {
+              try {
+                await remove(currentRow.id);
+                setOpen(null);
                 setCurrentRow(null);
-              }, 500);
-
-              showSubmittedData(currentRow, t("tasksPage.deleteMessage"));
+              } catch (err) {
+                console.error(err);
+              }
             }}
             className="max-w-md"
             title={t("tasksPage.deleteTitle", {

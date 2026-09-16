@@ -126,6 +126,7 @@ func main() {
 	// ============================================================
 
 	auth := api.Group("/auth")
+
 	{
 		auth.POST(
 			"/register",
@@ -193,6 +194,30 @@ func main() {
 		)
 
 		// ========================================================
+		// TASKS
+		// ========================================================
+
+		protected.GET(
+			"/tasks",
+			handlers.GetTasks,
+		)
+
+		protected.POST(
+			"/tasks",
+			handlers.CreateTask,
+		)
+
+		protected.PATCH(
+			"/tasks/:id",
+			handlers.UpdateTask,
+		)
+
+		protected.DELETE(
+			"/tasks/:id",
+			handlers.DeleteTask,
+		)
+
+		// ========================================================
 		// CHAT
 		// ========================================================
 
@@ -215,30 +240,35 @@ func main() {
 		// ========================================================
 
 		// GET PROVIDERS
+
 		protected.GET(
 			"/ai/providers",
 			handlers.GetAIProviders,
 		)
 
 		// CREATE PROVIDER
+
 		protected.POST(
 			"/ai/providers",
 			handlers.CreateAIProvider,
 		)
 
 		// TEST CONNECTION
+
 		protected.POST(
 			"/ai/providers/test",
 			handlers.TestAIProviderConnection,
 		)
 
 		// UPDATE PROVIDER
+
 		protected.PUT(
 			"/ai/providers/:id",
 			handlers.UpdateAIProvider,
 		)
 
 		// DELETE PROVIDER
+
 		protected.DELETE(
 			"/ai/providers/:id",
 			handlers.DeleteAIProvider,
@@ -249,18 +279,21 @@ func main() {
 		// ========================================================
 
 		// GET ALL MODELS
+
 		protected.GET(
 			"/ai/models",
 			handlers.GetAIModels,
 		)
 
 		// CREATE MODEL
+
 		protected.POST(
 			"/ai/models",
 			handlers.CreateAIModel,
 		)
 
 		// UPDATE MODEL
+
 		protected.PUT(
 			"/ai/models/:id",
 			handlers.UpdateAIModel,
@@ -305,20 +338,36 @@ func main() {
 	)
 
 	{
+		// ========================================================
+		// GET USERS
+		// ========================================================
+
 		admin.GET(
 			"/users",
 			handlers.AdminGetUsers,
 		)
+
+		// ========================================================
+		// CREATE USER
+		// ========================================================
 
 		admin.POST(
 			"/users",
 			handlers.AdminCreateUser,
 		)
 
+		// ========================================================
+		// UPDATE USER
+		// ========================================================
+
 		admin.PUT(
 			"/users/:id",
 			handlers.AdminUpdateUser,
 		)
+
+		// ========================================================
+		// DELETE USER
+		// ========================================================
 
 		admin.DELETE(
 			"/users/:id",

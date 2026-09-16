@@ -33,9 +33,9 @@ export function Header({
   return (
     <header
       className={cn(
-        "z-50 h-16",
+        "z-50 h-14 border-b border-border/70 bg-background",
         fixed && "sticky top-0 w-full",
-        fixed && offset > 10 ? "shadow-sm" : "shadow-none",
+        fixed && offset > 10 ? "shadow-none" : "shadow-none",
         className,
       )}
       {...props}
@@ -43,9 +43,7 @@ export function Header({
       <div
         className={cn(
           "relative flex h-full items-center gap-3 px-4 sm:gap-4",
-          fixed &&
-            offset > 10 &&
-            "after:absolute after:inset-0 after:-z-10 after:bg-background/80 after:backdrop-blur-lg",
+          
         )}
       >
         {/* Sidebar */}

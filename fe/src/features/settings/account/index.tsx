@@ -1,11 +1,14 @@
+import { useTranslation } from "react-i18next";
 import { ContentSection } from "../components/content-section";
 import { AccountForm } from "./account-form";
 
 export function SettingsAccount() {
+  const { t } = useTranslation();
+
   return (
     <ContentSection
-      title="Account & Workspace"
-      desc="Manage your Agentic AI account, workspace preferences, language, and timezone."
+      title={t("settingsPage.account.title")}
+      desc={t("settingsPage.account.subtitle")}
     >
       <AccountForm />
     </ContentSection>

@@ -1,9 +1,10 @@
+import React from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslation } from "react-i18next";
 
-import { showSubmittedData } from "@/lib/show-submitted-data";
+
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -26,6 +27,7 @@ import {
 } from "@/components/ui/sheet";
 import { SelectDropdown } from "@/components/select-dropdown";
 import { type Task } from "../data/schema";
+import { useTasks } from "./tasks-provider";
 
 type TaskMutateDrawerProps = {
   open: boolean;
@@ -41,6 +43,8 @@ export function TasksMutateDrawer({
   const { t } = useTranslation();
 
   const isUpdate = !!currentRow;
+  const { create, update } = useTasks();
+  const [saving, setSaving] = React.useState(false);
 
   const formSchema = z.object({
     title: z.string().min(1, t("tasksPage.validation.title")),
@@ -61,10 +65,23 @@ export function TasksMutateDrawer({
     },
   });
 
-  const onSubmit = (data: TaskForm) => {
-    onOpenChange(false);
-    form.reset();
-    showSubmittedData(data);
+  const onSubmit = async (data: TaskForm) => {
+    setSaving(true);
+    try {
+      if (isUpdate && currentRow) {
+        await update(currentRow.id, data);
+      } else {
+        await create(data);
+      }
+      onOpenChange(false);
+      form.reset();
+    } catch (err) {
+      form.setError("root", {
+        message: err instanceof Error ? err.message : t("tasksPage.saveError"),
+      });
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -95,6 +112,10 @@ export function TasksMutateDrawer({
             onSubmit={form.handleSubmit(onSubmit)}
             className="flex-1 space-y-6 overflow-y-auto px-4"
           >
+            {form.formState.errors.root?.message && (
+              <p className="text-sm text-destructive">{form.formState.errors.root.message}</p>
+            )}
+
             {/* Title */}
             <FormField
               control={form.control}
@@ -105,6 +126,7 @@ export function TasksMutateDrawer({
 
                   <FormControl>
                     <Input
+                      disabled={saving}
                       {...field}
                       placeholder={t("tasksPage.titlePlaceholder")}
                     />
@@ -126,6 +148,7 @@ export function TasksMutateDrawer({
                   <SelectDropdown
                     defaultValue={field.value}
                     onValueChange={field.onChange}
+                    disabled={saving}
                     placeholder={t("tasksPage.selectStatus")}
                     items={[
                       {
@@ -166,6 +189,7 @@ export function TasksMutateDrawer({
 
                   <FormControl>
                     <RadioGroup
+                      disabled={saving}
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                       className="flex flex-col space-y-1"
@@ -217,6 +241,7 @@ export function TasksMutateDrawer({
 
                   <FormControl>
                     <RadioGroup
+                      disabled={saving}
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                       className="flex flex-col space-y-1"
@@ -262,11 +287,11 @@ export function TasksMutateDrawer({
 
         <SheetFooter className="gap-2">
           <SheetClose asChild>
-            <Button variant="outline">{t("tasksPage.close")}</Button>
+            <Button variant="outline" disabled={saving}>{t("tasksPage.close")}</Button>
           </SheetClose>
 
-          <Button form="tasks-form" type="submit">
-            {t("tasksPage.saveChanges")}
+          <Button form="tasks-form" type="submit" disabled={saving}>
+            {saving ? t("tasksPage.saving") : t("tasksPage.saveChanges")}
           </Button>
         </SheetFooter>
       </SheetContent>

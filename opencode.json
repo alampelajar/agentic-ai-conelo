@@ -1,0 +1,31 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "ipeenk/IpeenkStarter/claude-sonnet-5",
+  "provider": {
+    "ipeenk": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "ai.ipeenk.com",
+      "options": {
+        "baseURL": "https://ai.ipeenk.com/v1",
+        "apiKey": "{env:IPEENK_API_KEY}"
+      },
+      "models": {
+        "IpeenkStarter/claude-sonnet-5": {
+          "name": "Claude Sonnet 5"
+        },
+        "IpeenkStarter/claude-opus-4.6": {
+          "name": "Claude Opus 4.6"
+        },
+        "IpeenkStarter/claude-opus-4.7": {
+          "name": "Claude Opus 4.7"
+        },
+        "IpeenkStarter/claude-opus-4.8": {
+          "name": "Claude Opus 4.8"
+        },
+        "IpeenkStarter/claude-opus-5": {
+          "name": "Claude Opus 5"
+        }
+      }
+    }
+  }
+}

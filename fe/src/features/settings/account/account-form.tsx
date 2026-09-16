@@ -2,6 +2,8 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslation } from "react-i18next";
+import i18n from "@/i18n";
 
 import { showSubmittedData } from "@/lib/show-submitted-data";
 import { cn } from "@/lib/utils";
@@ -88,7 +90,7 @@ const defaultValues: Partial<AccountFormValues> = {
   workspace: "agenticAI",
   description:
     "AI workspace untuk mengelola agent, task, tools, dan aktivitas Agentic AI.",
-  language: "id",
+  language: i18n.language.startsWith("en") ? "en" : "id",
 };
 
 /* =========================================================
@@ -96,6 +98,8 @@ const defaultValues: Partial<AccountFormValues> = {
 ========================================================= */
 
 export function AccountForm() {
+  const { t } = useTranslation();
+
   const form = useForm<AccountFormValues>({
     resolver: zodResolver(accountFormSchema),
     defaultValues,
@@ -117,10 +121,10 @@ export function AccountForm() {
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Display Name</FormLabel>
+              <FormLabel>{t("settingsPage.account.name")}</FormLabel>
 
               <FormControl>
-                <Input placeholder="Your display name" {...field} />
+                <Input placeholder={t("settingsPage.account.namePlaceholder")} {...field} />
               </FormControl>
 
               <FormDescription>
@@ -142,10 +146,10 @@ export function AccountForm() {
           name="workspace"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Workspace Name</FormLabel>
+              <FormLabel>{t("settingsPage.account.workspace")}</FormLabel>
 
               <FormControl>
-                <Input placeholder="agenticAI" {...field} />
+                <Input placeholder={t("settingsPage.account.workspacePlaceholder")} {...field} />
               </FormControl>
 
               <FormDescription>
@@ -166,10 +170,10 @@ export function AccountForm() {
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Workspace Description</FormLabel>
+              <FormLabel>{t("settingsPage.account.workspaceDescription")}</FormLabel>
 
               <FormControl>
-                <Input placeholder="Describe your AI workspace" {...field} />
+                <Input placeholder={t("settingsPage.account.workspaceDescriptionPlaceholder")} {...field} />
               </FormControl>
 
               <FormDescription>
@@ -190,7 +194,7 @@ export function AccountForm() {
           name="language"
           render={({ field }) => (
             <FormItem className="flex flex-col">
-              <FormLabel>Language</FormLabel>
+              <FormLabel>{t("settingsPage.account.language")}</FormLabel>
 
               <Popover>
                 <PopoverTrigger asChild>
@@ -207,7 +211,7 @@ export function AccountForm() {
                         ? languages.find(
                             (language) => language.value === field.value,
                           )?.label
-                        : "Select language"}
+                        : t("settingsPage.account.selectLanguage")}
 
                       <CaretSortIcon className="ms-2 size-4 shrink-0 opacity-50" />
                     </Button>
@@ -216,9 +220,9 @@ export function AccountForm() {
 
                 <PopoverContent className="w-64 p-0" align="start">
                   <Command>
-                    <CommandInput placeholder="Search language..." />
+                    <CommandInput placeholder={t("settingsPage.account.searchLanguage")} />
 
-                    <CommandEmpty>No language found.</CommandEmpty>
+                    <CommandEmpty>{t("settingsPage.account.noLanguage")}</CommandEmpty>
 
                     <CommandGroup>
                       <CommandList>
@@ -230,6 +234,7 @@ export function AccountForm() {
                               form.setValue("language", language.value, {
                                 shouldValidate: true,
                               });
+                              i18n.changeLanguage(language.value);
                             }}
                           >
                             <CheckIcon
@@ -264,10 +269,10 @@ export function AccountForm() {
         ===================================================== */}
 
         <div className="flex items-center gap-3 border-t pt-6">
-          <Button type="submit">Save Changes</Button>
+          <Button type="submit">{t("settingsPage.account.saveChanges")}</Button>
 
           <Button type="button" variant="outline" onClick={() => form.reset()}>
-            Reset
+            {t("common.reset")}
           </Button>
         </div>
       </form>

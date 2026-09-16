@@ -9,11 +9,17 @@ import { TasksPrimaryButtons } from "./components/tasks-primary-buttons";
 import { TasksProvider } from "./components/tasks-provider";
 import { TasksTable } from "./components/tasks-table";
 
-import { useAgentTasks } from "@/features/ai/components/agent-tasks-provider";
+
 
 export function Tasks() {
   const { t } = useTranslation();
-  const { tasks: agentTasks } = useAgentTasks();
+
+
+  // ============================================================
+  // BACKEND TASKS
+  // ============================================================
+
+  // The table is fed by TasksProvider, which loads /api/tasks.
 
   // ============================================================
   // PAGE LOADING
@@ -155,7 +161,7 @@ export function Tasks() {
               shadow-sm
             "
           >
-            <TasksTable data={agentTasks} />
+            <TasksTable />
           </div>
 
           {/* ====================================================

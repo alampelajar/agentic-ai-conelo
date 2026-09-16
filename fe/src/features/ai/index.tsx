@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
   Check,
   Download,
@@ -81,14 +82,6 @@ const workflowSteps: WorkflowStep[] = [
   'done',
 ]
 
-const workflowLabels: Record<WorkflowStep, string> = {
-  goal: 'Understand',
-  planning: 'Planning',
-  coding: 'Working',
-  testing: 'Testing',
-  done: 'Completed',
-}
-
 // ============================================================
 // HELPERS
 // ============================================================
@@ -110,6 +103,7 @@ function formatFileSize(size: number) {
 // ============================================================
 
 export function AIAssistant() {
+  const { t } = useTranslation()
   const { addTasks } = useAgentTasks()
 
   const accessToken = useAuthStore((state) => state.auth.accessToken)
@@ -302,7 +296,7 @@ export function AIAssistant() {
 
     if (!response.ok) {
       throw new Error(
-        data?.error || data?.message || 'Gagal menentukan task AI.'
+        data?.error || data?.message || t('agentic.errors.planningFailed')
       )
     }
 
@@ -394,7 +388,7 @@ export function AIAssistant() {
 
     if (!response.ok) {
       throw new Error(
-        data?.error || data?.message || 'Gagal mendapatkan jawaban AI.'
+        data?.error || data?.message || t('agentic.errors.chatFailed')
       )
     }
 
@@ -403,7 +397,7 @@ export function AIAssistant() {
     // ----------------------------------------------------------
 
     if (!data?.message) {
-      throw new Error('AI mengembalikan jawaban kosong.')
+      throw new Error(t('agentic.errors.emptyResponse'))
     }
 
     // ----------------------------------------------------------
@@ -498,7 +492,7 @@ export function AIAssistant() {
     })
 
     if (!response.ok) {
-      let errorMessage = 'Generator gagal.'
+      let errorMessage = t('agentic.errors.generatorFailed')
 
       try {
         const error = await response.json()
@@ -520,7 +514,7 @@ export function AIAssistant() {
     const blob = await response.blob()
 
     if (blob.size === 0) {
-      throw new Error('File ZIP kosong.')
+      throw new Error(t('agentic.errors.emptyZip'))
     }
 
     // --------------------------------------------------------
@@ -629,12 +623,9 @@ export function AIAssistant() {
       if (plan.intent === 'generator') {
         const generated = await sendGenerator(text, selectedAgent, files)
 
-        addAgentMessage(
-          'Website berhasil dibuat. Kamu bisa mengunduh file ZIP di bawah ini.',
-          {
-            file: generated,
-          }
-        )
+        addAgentMessage(t('agentic.messages.websiteCreated'), {
+          file: generated,
+        })
       }
 
       // ======================================================
@@ -659,7 +650,7 @@ export function AIAssistant() {
       }
     } catch (error) {
       const errorMessage =
-        error instanceof Error ? error.message : 'Terjadi kesalahan.'
+        error instanceof Error ? error.message : t('agentic.errors.generic')
 
       addAgentMessage(`Maaf, terjadi kesalahan.\n\n${errorMessage}`)
     } finally {
@@ -679,6 +670,14 @@ export function AIAssistant() {
   const currentStepIndex =
     currentStep === null ? -1 : workflowSteps.indexOf(currentStep)
 
+  const workflowLabels: Record<WorkflowStep, string> = {
+    goal: t('agentic.workflow.goal'),
+    planning: t('agentic.workflow.planning'),
+    coding: t('agentic.workflow.coding'),
+    testing: t('agentic.workflow.testing'),
+    done: t('agentic.workflow.done'),
+  }
+
   // ============================================================
   // LOADING
   // ============================================================
@@ -692,36 +691,32 @@ export function AIAssistant() {
   // ============================================================
 
   return (
-    <Main className='flex min-h-0 flex-1 flex-col overflow-hidden p-0'>
+    <Main className='agentic-workspace flex min-h-0 flex-1 flex-col overflow-hidden bg-background p-0'>
       <div className='flex min-h-0 flex-1 flex-col'>
         {/* ======================================================
             HEADER
         ====================================================== */}
 
-        <header className='shrink-0 border-b bg-background'>
+        <header className='shrink-0 border-b border-border/70 bg-background'>
           <div className='mx-auto flex w-full max-w-5xl items-center gap-3 px-4 py-3 sm:px-6'>
-            <div className='flex size-9 items-center justify-center rounded-lg bg-primary/10 text-primary'>
+            <div className='flex size-8 items-center justify-center rounded-md border border-border/70 bg-muted/40 text-primary'>
               <Sparkles className='size-4' />
             </div>
 
-            <div className='flex-1'>
-              <AgentSelector
-                selectedAgent={selectedAgent}
-                onSelect={setSelectedAgent}
-                selectedModel={selectedModel}
-                onModelSelect={setSelectedModel}
-              />
+            <div className='flex-1 min-w-0'>
+              <div className='truncate text-sm font-medium'>{t('agentic.workspaceLabel')}</div>
+              <div className='truncate text-xs text-muted-foreground'>{t('agentic.workspaceLabel')}</div>
             </div>
 
             <button
               type='button'
               onClick={handleNewChat}
               disabled={running}
-              className='flex h-9 items-center gap-2 rounded-lg border px-3 text-sm hover:bg-muted disabled:opacity-50'
+              className='agentic-subtle-button flex h-9 items-center gap-2 rounded-md border px-3 text-sm transition-colors disabled:opacity-50'
             >
               <Plus className='size-4' />
 
-              <span className='hidden sm:inline'>New Chat</span>
+              <span className='hidden sm:inline'>{t('agentic.newChat')}</span>
             </button>
           </div>
         </header>
@@ -731,15 +726,15 @@ export function AIAssistant() {
         ====================================================== */}
 
         {currentStep && (
-          <div className='shrink-0 border-b bg-muted/30'>
-            <div className='mx-auto w-full max-w-4xl px-4 py-3'>
+          <div className='shrink-0 border-b border-border/70 bg-background'>
+            <div className='mx-auto w-full max-w-4xl px-4 py-2.5'>
               <div className='mb-2 flex justify-between text-xs'>
                 <span>{currentTaskId}</span>
 
                 <span>{progress}%</span>
               </div>
 
-              <div className='mb-3 h-1.5 overflow-hidden rounded-full bg-muted'>
+              <div className='mb-3 h-1 overflow-hidden rounded-full bg-muted'>
                 <div
                   className='h-full rounded-full bg-primary transition-all'
                   style={{
@@ -784,22 +779,21 @@ export function AIAssistant() {
         <div className='min-h-0 flex-1 overflow-y-auto px-4 py-6 sm:px-6'>
           <div className='mx-auto flex w-full max-w-4xl flex-col'>
             {messages.length === 0 ? (
-              <div className='flex min-h-[55vh] flex-col items-center justify-center text-center'>
-                <div className='mb-5 flex size-14 items-center justify-center rounded-2xl bg-primary/10 text-primary'>
-                  <Sparkles className='size-7' />
+              <div className='flex min-h-[52vh] flex-col items-center justify-center px-4 text-center'>
+                <div className='mb-5 flex size-10 items-center justify-center rounded-md border border-border/70 bg-muted/40 text-primary'>
+                  <Sparkles className='size-5' />
                 </div>
 
-                <h1 className='text-2xl font-semibold'>
-                  Apa yang ingin kamu tanyakan?
+                <h1 className='text-xl font-semibold tracking-tight sm:text-2xl'>
+                  {t('agentic.questionTitle')}
                 </h1>
 
                 <p className='mt-2 max-w-lg text-sm text-muted-foreground'>
-                  Chat dengan AI, tanyakan apa saja, upload gambar untuk
-                  dianalisis, atau minta AI membuat landing page.
+                  {t('agentic.questionDescription')}
                 </p>
 
                 {selectedAgent && selectedModel && (
-                  <div className='mt-4 rounded-lg border bg-muted/30 px-4 py-2 text-xs text-muted-foreground'>
+                  <div className='mt-4 inline-flex rounded-md border border-border/70 bg-muted/20 px-3 py-1.5 text-xs text-muted-foreground'>
                     {selectedAgent.name}
                     {' · '}
                     {selectedModel.name}
@@ -809,7 +803,7 @@ export function AIAssistant() {
                 )}
               </div>
             ) : (
-              <div className='flex flex-col gap-5'>
+              <div className='flex flex-col gap-7'>
                 {messages.map((item) => (
                   <div
                     key={item.id}
@@ -820,17 +814,17 @@ export function AIAssistant() {
                     {/* AI ICON */}
 
                     {item.role === 'agent' && (
-                      <div className='flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary'>
+                      <div className='flex size-7 shrink-0 items-center justify-center rounded-md border border-border/60 bg-muted/30 text-primary'>
                         <Sparkles className='size-4' />
                       </div>
                     )}
 
-                    <div className='max-w-[80%]'>
+                    <div className='max-w-[min(80%,48rem)]'>
                       <div
-                        className={`rounded-xl px-4 py-3 text-sm leading-6 whitespace-pre-wrap ${
+                        className={`agentic-message rounded-lg border px-4 py-3 text-sm leading-6 whitespace-pre-wrap ${
                           item.role === 'user'
-                            ? 'bg-primary text-primary-foreground'
-                            : 'border bg-muted/40'
+                            ? 'agentic-message-user border-transparent'
+                            : 'agentic-message-agent'
                         }`}
                       >
                         {item.content}
@@ -840,8 +834,8 @@ export function AIAssistant() {
                           ==================================== */}
 
                         {item.file && (
-                          <div className='mt-4 flex items-center gap-3 rounded-lg border bg-background p-3'>
-                            <div className='flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary'>
+                          <div className='mt-4 flex items-center gap-3 rounded-md border border-border/70 bg-background/60 p-3'>
+                            <div className='flex size-9 shrink-0 items-center justify-center rounded-md border border-border/70 bg-muted/30 text-primary'>
                               <FileArchive className='size-5' />
                             </div>
 
@@ -858,10 +852,10 @@ export function AIAssistant() {
                             <a
                               href={item.file.blobUrl}
                               download={item.file.name}
-                              className='flex items-center gap-2 rounded-lg bg-primary px-3 py-2 text-xs font-medium text-primary-foreground'
+                              className='flex items-center gap-2 rounded-md bg-primary px-3 py-2 text-xs font-medium text-primary-foreground transition-opacity hover:opacity-90'
                             >
                               <Download className='size-4' />
-                              Download
+                              {t('agentic.download')}
                             </a>
                           </div>
                         )}
@@ -871,8 +865,8 @@ export function AIAssistant() {
                           ==================================== */}
 
                         {item.role === 'agent' && item.model && (
-                          <div className='mt-3 flex flex-wrap items-center gap-2 border-t border-border/60 pt-2 text-[11px] text-muted-foreground'>
-                            <span>Model:</span>
+                          <div className='agentic-meta mt-3 flex flex-wrap items-center gap-2 border-t border-border/60 pt-2 text-[11px]'>
+                            <span>{t('agentic.model')}:</span>
 
                             <span className='font-medium text-foreground'>
                               {item.model}
@@ -901,7 +895,7 @@ export function AIAssistant() {
                     {/* USER ICON */}
 
                     {item.role === 'user' && (
-                      <div className='flex size-8 shrink-0 items-center justify-center rounded-lg bg-muted'>
+                      <div className='flex size-7 shrink-0 items-center justify-center rounded-md border border-border/60 bg-muted/30'>
                         <User className='size-4' />
                       </div>
                     )}
@@ -916,7 +910,7 @@ export function AIAssistant() {
             INPUT
         ====================================================== */}
 
-        <div className='shrink-0 border-t bg-background px-4 py-4 sm:px-6'>
+        <div className='shrink-0 border-t border-border/70 bg-background px-4 py-4 sm:px-6'>
           <div className='mx-auto w-full max-w-4xl'>
             {/* ==================================================
                 SELECTED FILES
@@ -927,7 +921,7 @@ export function AIAssistant() {
                 {selectedFiles.map((file, index) => (
                   <div
                     key={`${file.name}-${index}`}
-                    className='flex items-center gap-2 rounded-lg border px-3 py-2 text-xs'
+                    className='flex items-center gap-2 rounded-md border border-border/70 bg-muted/20 px-3 py-2 text-xs'
                   >
                     <FileArchive className='size-4 text-primary' />
 
@@ -948,7 +942,7 @@ export function AIAssistant() {
                 TEXTAREA
             ================================================== */}
 
-            <div className='rounded-xl border bg-background'>
+            <div className='agentic-composer rounded-lg border bg-background transition-[border-color,box-shadow]'>
               <textarea
                 rows={2}
                 value={message}
@@ -963,12 +957,14 @@ export function AIAssistant() {
                 disabled={!selectedAgent || !selectedModel || running}
                 placeholder={
                   !selectedAgent
-                    ? 'Pilih Virtual Employee terlebih dahulu...'
+                    ? t('agentic.input.selectEmployee')
                     : !selectedModel
-                      ? 'Pilih model terlebih dahulu...'
+                      ? t('agentic.input.selectModel')
                       : running
-                        ? 'AI sedang memproses...'
-                        : `Tulis pesan untuk ${selectedModel.name}...`
+                        ? t('agentic.input.processing')
+                        : t('agentic.input.writeMessage', {
+                            model: selectedModel.name,
+                          })
                 }
                 className='min-h-[80px] w-full resize-none border-0 bg-transparent px-4 py-3 text-sm outline-none'
               />
@@ -989,7 +985,7 @@ export function AIAssistant() {
                   type='button'
                   onClick={() => fileInputRef.current?.click()}
                   disabled={!selectedAgent || !selectedModel || running}
-                  className='flex size-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted disabled:opacity-40'
+                  className='flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted disabled:opacity-40'
                 >
                   <Paperclip className='size-4' />
                 </button>
@@ -1005,11 +1001,27 @@ export function AIAssistant() {
                     !message.trim() ||
                     running
                   }
-                  className='flex size-9 items-center justify-center rounded-lg bg-primary text-primary-foreground disabled:opacity-40'
+                  className='flex size-8 items-center justify-center rounded-md bg-primary text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-40'
                 >
                   <Send className='size-4' />
                 </button>
               </div>
+            </div>
+
+            {/* ==================================================
+                AGENT + MODEL CONTROLS
+                Deliberately placed below the composer, like modern
+                agentic interfaces. Agent is the workspace context;
+                model is a quick execution choice.
+            ================================================== */}
+
+            <div className='mt-2'>
+              <AgentSelector
+                selectedAgent={selectedAgent}
+                onSelect={setSelectedAgent}
+                selectedModel={selectedModel}
+                onModelSelect={setSelectedModel}
+              />
             </div>
 
             {/* ==================================================
@@ -1018,14 +1030,20 @@ export function AIAssistant() {
 
             <div className='mt-2 text-center text-xs text-muted-foreground'>
               {running && selectedAgent
-                ? `${selectedAgent.name} sedang berpikir${
-                    selectedModel ? ` dengan ${selectedModel.name}` : ''
-                  }...`
+                ? t('agentic.status.thinking', {
+                    agent: selectedAgent.name,
+                    model: selectedModel?.name,
+                  })
                 : selectedAgent && selectedModel
-                  ? `${selectedAgent.name} · ${selectedModel.name} siap digunakan`
+                  ? t('agentic.status.ready', {
+                      agent: selectedAgent.name,
+                      model: selectedModel.name,
+                    })
                   : selectedAgent
-                    ? `${selectedAgent.name} · Pilih model`
-                    : 'Pilih Virtual Employee'}
+                    ? t('agentic.status.selectModel', {
+                        agent: selectedAgent.name,
+                      })
+                    : t('agentic.status.selectEmployee')}
             </div>
           </div>
         </div>

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -15,13 +16,33 @@ import (
 var DB *gorm.DB
 
 func ConnectDatabase() {
+	host := strings.TrimSpace(os.Getenv("DB_HOST"))
+	if host == "" {
+		host = "127.0.0.1"
+	}
+
+	port := strings.TrimSpace(os.Getenv("DB_PORT"))
+	if port == "" {
+		port = "5432"
+	}
+
+	missing := make([]string, 0, 3)
+	for _, name := range []string{"DB_USER", "DB_PASSWORD", "DB_NAME"} {
+		if strings.TrimSpace(os.Getenv(name)) == "" {
+			missing = append(missing, name)
+		}
+	}
+	if len(missing) > 0 {
+		log.Fatalf("Konfigurasi PostgreSQL belum lengkap. Isi variabel: %s", strings.Join(missing, ", "))
+	}
+
 	dsn := fmt.Sprintf(
 		"host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=Asia/Jakarta",
-		os.Getenv("DB_HOST"),
+		host,
 		os.Getenv("DB_USER"),
 		os.Getenv("DB_PASSWORD"),
 		os.Getenv("DB_NAME"),
-		os.Getenv("DB_PORT"),
+		port,
 	)
 
 	db, err := gorm.Open(
@@ -38,14 +59,15 @@ func ConnectDatabase() {
 
 	DB = db
 
-	err = DB.AutoMigrate(
-		&models.User{},
-		&models.RefreshToken{},
-		&models.AIProvider{},
-		&models.AIModel{},
-		&models.Agent{},
-		&models.AgentModel{},
-	)
+err = DB.AutoMigrate(
+	&models.User{},
+	&models.RefreshToken{},
+	&models.AIProvider{},
+	&models.AIModel{},
+	&models.Agent{},
+	&models.AgentModel{},
+	&models.Task{},
+)
 
 	if err != nil {
 		log.Fatal(

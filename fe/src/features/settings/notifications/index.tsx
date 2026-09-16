@@ -1,13 +1,12 @@
-import { ContentSection } from '../components/content-section'
-import { NotificationsForm } from './notifications-form'
+import { useTranslation } from "react-i18next";
+import { ContentSection } from "../components/content-section";
+import { NotificationsForm } from "./notifications-form";
 
 export function SettingsNotifications() {
+  const { t } = useTranslation();
   return (
-    <ContentSection
-      title='Notifications'
-      desc='Configure how you receive notifications.'
-    >
+    <ContentSection title={t("settingsPage.notifications.title")} desc={t("settingsPage.notifications.subtitle")}>
       <NotificationsForm />
     </ContentSection>
-  )
+  );
 }

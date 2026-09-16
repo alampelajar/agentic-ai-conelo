@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 import {
   Sidebar,
   SidebarContent,
@@ -16,23 +17,25 @@ import { sidebarData } from "./data/sidebar-data";
 export function AppSidebar({
   ...props
 }: React.ComponentProps<typeof Sidebar>) {
+  const { t } = useTranslation();
+
   return (
-    <Sidebar collapsible="icon" variant="inset" {...props}>
+    <Sidebar collapsible="icon" variant="sidebar" {...props}>
       {/* =====================================================
           LOGO
       ===================================================== */}
 
       <SidebarHeader>
-        <div className="flex h-12 items-center gap-2 px-2">
-          <Logo className="size-8 shrink-0" />
+        <div className="flex h-14 items-center gap-2 px-3">
+          <Logo className="size-7 shrink-0" />
 
           <div className="grid flex-1 text-start leading-tight">
-            <span className="truncate text-sm font-semibold">
+            <span className="truncate text-[13px] font-semibold tracking-tight">
               AGENTIC<span className="text-primary">AI</span>
             </span>
 
-            <span className="truncate text-xs text-muted-foreground">
-              SMART AGENTIC
+            <span className="truncate text-[11px] text-muted-foreground">
+              {t('sidebar.smartAgentic')}
             </span>
           </div>
         </div>

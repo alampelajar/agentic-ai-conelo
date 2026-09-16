@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { getRouteApi } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
+
+import { useTasks } from "./tasks-provider";
 import {
   type SortingState,
   type VisibilityState,
@@ -29,18 +31,14 @@ import {
 import { DataTablePagination, DataTableToolbar } from "@/components/data-table";
 
 import { priorities, statuses } from "../data/data";
-import { type Task } from "../data/schema";
 import { DataTableBulkActions } from "./data-table-bulk-actions";
 import { tasksColumns as columns } from "./tasks-columns";
 
 const route = getRouteApi("/_authenticated/tasks/");
 
-type DataTableProps = {
-  data: Task[];
-};
-
-export function TasksTable({ data }: DataTableProps) {
+export function TasksTable() {
   const { t } = useTranslation();
+  const { tasks: data, loading, error, refresh } = useTasks();
 
   // Local UI-only states
   const [rowSelection, setRowSelection] = useState({});
@@ -125,8 +123,29 @@ export function TasksTable({ data }: DataTableProps) {
   const pageCount = table.getPageCount();
 
   useEffect(() => {
+    const handler = () => { void refresh(); };
+    window.addEventListener("tasks:refresh", handler);
+    return () => window.removeEventListener("tasks:refresh", handler);
+  }, [refresh]);
+
+  useEffect(() => {
     ensurePageInRange(pageCount);
   }, [pageCount, ensurePageInRange]);
+
+  if (loading) {
+    return <div className="flex min-h-48 items-center justify-center text-sm text-muted-foreground">{t("tasksPage.loading")}</div>;
+  }
+
+  if (error) {
+    return (
+      <div className="flex min-h-48 flex-col items-center justify-center gap-3 p-6 text-center">
+        <p className="text-sm text-destructive">{error}</p>
+        <button type="button" className="text-sm font-medium text-primary hover:underline" onClick={() => void refresh()}>
+          {t("tasksPage.retry")}
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div

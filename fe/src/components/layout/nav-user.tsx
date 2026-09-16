@@ -7,6 +7,7 @@ import {
   LogOut,
   Sparkles,
 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 import useDialogState from '@/hooks/use-dialog-state'
 import { useAuthStore } from '@/stores/auth-store'
@@ -34,6 +35,7 @@ import { SignOutDialog } from '@/components/sign-out-dialog'
 export function NavUser() {
   const { isMobile } = useSidebar()
   const [open, setOpen] = useDialogState()
+  const { t } = useTranslation()
 
   const user = useAuthStore((state) => state.auth.user)
 
@@ -124,7 +126,7 @@ export function NavUser() {
               <DropdownMenuGroup>
                 <DropdownMenuItem>
                   <Sparkles />
-                  Upgrade to Pro
+                  {t('navigation.upgradeToPro')}
                 </DropdownMenuItem>
               </DropdownMenuGroup>
 
@@ -135,21 +137,21 @@ export function NavUser() {
                 <DropdownMenuItem asChild>
                   <Link to='/settings/account'>
                     <BadgeCheck />
-                    Account
+                    {t('account')}
                   </Link>
                 </DropdownMenuItem>
 
                 <DropdownMenuItem asChild>
                   <Link to='/settings'>
                     <CreditCard />
-                    Billing
+                    {t('navigation.billing')}
                   </Link>
                 </DropdownMenuItem>
 
                 <DropdownMenuItem asChild>
                   <Link to='/settings/notifications'>
                     <Bell />
-                    Notifications
+                    {t('notifications')}
                   </Link>
                 </DropdownMenuItem>
               </DropdownMenuGroup>
@@ -162,7 +164,7 @@ export function NavUser() {
                 onClick={() => setOpen(true)}
               >
                 <LogOut />
-                Sign out
+                {t('navigation.signOut')}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

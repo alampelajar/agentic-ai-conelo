@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import {
   ArrowRight,
@@ -60,6 +61,7 @@ type Agent = {
 // ============================================================
 
 function AIOverview() {
+  const { t } = useTranslation()
   const accessToken = useAuthStore((state) => state.auth.accessToken)
 
   const [agents, setAgents] = useState<Agent[]>([])
@@ -92,13 +94,13 @@ function AIOverview() {
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data?.error || 'Gagal mengambil data Agent.')
+        throw new Error(data?.error || t('overviewPage.errors.loadAgents'))
       }
 
       setAgents(Array.isArray(data?.agents) ? data.agents : [])
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : 'Gagal mengambil data Agent.'
+        err instanceof Error ? err.message : t('overviewPage.errors.loadAgents')
       )
 
       setAgents([])
@@ -161,15 +163,15 @@ function AIOverview() {
           <div>
             <div className='mb-2 flex items-center gap-2 text-sm font-medium text-primary'>
               <Sparkles className='size-4' />
-              Agentic AI
+              {t('agenticAI')}
             </div>
 
             <h1 className='text-2xl font-bold tracking-tight sm:text-3xl'>
-              AI Overview
+              {t('overview')}
             </h1>
 
             <p className='mt-1 text-sm text-muted-foreground sm:text-base'>
-              Monitor AI Agents dan konfigurasi model dari satu tempat.
+              {t('overviewPage.subtitle')}
             </p>
           </div>
 
@@ -178,7 +180,7 @@ function AIOverview() {
             className='inline-flex h-10 shrink-0 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground shadow-sm transition-colors hover:bg-primary/90'
           >
             <Sparkles className='me-2 size-4' />
-            Mulai AI Task
+            {t('startAITask')}
           </Link>
         </div>
 
@@ -190,7 +192,7 @@ function AIOverview() {
           <Card className='border-destructive/30'>
             <CardContent className='p-4'>
               <p className='font-medium text-destructive'>
-                Gagal mengambil data Agent
+                {t('overviewPage.errors.title')}
               </p>
 
               <p className='mt-1 text-sm text-muted-foreground'>{error}</p>
@@ -204,36 +206,36 @@ function AIOverview() {
 
         <div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-4'>
           <StatCard
-            title='Total Agents'
+            title={t('overviewPage.stats.totalAgents')}
             value={totalAgents}
-            description='AI Agent yang dikonfigurasi'
+            description={t('overviewPage.stats.totalAgentsDescription')}
             icon={Bot}
             href='/users'
             color='blue'
           />
 
           <StatCard
-            title='Active Agents'
+            title={t('activeAgents')}
             value={activeAgents}
-            description='Agent yang aktif'
+            description={t('overviewPage.stats.activeAgentsDescription')}
             icon={Sparkles}
             href='/users'
             color='violet'
           />
 
           <StatCard
-            title='Available Models'
+            title={t('overviewPage.stats.availableModels')}
             value={totalModels}
-            description='Model yang tersedia'
+            description={t('overviewPage.stats.availableModelsDescription')}
             icon={Cpu}
             href='/users'
             color='amber'
           />
 
           <StatCard
-            title='System Models'
+            title={t('overviewPage.stats.systemModels')}
             value={systemModels}
-            description='Model bawaan sistem'
+            description={t('overviewPage.stats.systemModelsDescription')}
             icon={CheckCircle2}
             href='/users'
             color='emerald'
@@ -248,10 +250,10 @@ function AIOverview() {
           <section className='rounded-xl border bg-card p-5 shadow-sm'>
             <div className='mb-5 flex items-start justify-between gap-4'>
               <div>
-                <h2 className='text-lg font-semibold'>Active Agents</h2>
+                <h2 className='text-lg font-semibold'>{t('activeAgents')}</h2>
 
                 <p className='mt-1 text-sm text-muted-foreground'>
-                  Agent yang tersedia di Agentic AI.
+                  {t('overviewPage.activeAgentsDescription')}
                 </p>
               </div>
 
@@ -259,7 +261,7 @@ function AIOverview() {
                 to='/ai/agents'
                 className='group flex shrink-0 items-center gap-1 text-sm font-medium text-primary'
               >
-                Lihat Semua
+                {t('viewAll')}
                 <ChevronRight className='size-4 transition-transform group-hover:translate-x-0.5' />
               </Link>
             </div>
@@ -281,10 +283,10 @@ function AIOverview() {
 
           <section className='rounded-xl border bg-card p-5 shadow-sm'>
             <div className='mb-5'>
-              <h2 className='text-lg font-semibold'>Model AI</h2>
+              <h2 className='text-lg font-semibold'>{t('overviewPage.modelSummary.title')}</h2>
 
               <p className='mt-1 text-sm text-muted-foreground'>
-                Model yang tersedia untuk Agent.
+                {t('overviewPage.modelSummary.description')}
               </p>
             </div>
 
@@ -305,8 +307,9 @@ function AIOverview() {
                         </p>
 
                         <p className='mt-0.5 text-xs text-muted-foreground'>
-                          {agent.models.length} model
-                          {agent.models.length !== 1 ? 's' : ''}
+                          {t('overviewPage.modelCount', {
+                            count: agent.models.length,
+                          })}
                         </p>
                       </div>
 
@@ -330,7 +333,7 @@ function AIOverview() {
 
                         {agent.models.length > 2 && (
                           <p className='px-2.5 pt-1 text-[11px] text-muted-foreground'>
-                            +{agent.models.length - 2} model lainnya
+                            {t('overviewPage.moreModels', { count: agent.models.length - 2 })}
                           </p>
                         )}
                       </div>
@@ -348,10 +351,10 @@ function AIOverview() {
 
         <section className='rounded-xl border bg-card p-5 shadow-sm'>
           <div className='mb-5'>
-            <h2 className='text-lg font-semibold'>Quick Actions</h2>
+            <h2 className='text-lg font-semibold'>{t('quickActions')}</h2>
 
             <p className='mt-1 text-sm text-muted-foreground'>
-              Akses cepat ke fitur Agentic AI.
+              {t('overviewPage.quickActionsDescription')}
             </p>
           </div>
 
@@ -359,24 +362,24 @@ function AIOverview() {
             <QuickAction
               href='/ai'
               icon={Sparkles}
-              title='Create AI Goal'
-              description='Mulai percakapan dengan Agent'
+              title={t('createAIGoal')}
+              description={t('overviewPage.quickActions.createGoal')}
               color='blue'
             />
 
             <QuickAction
               href='/users'
               icon={Bot}
-              title='Manage Agents'
-              description='Lihat dan kelola Agent'
+              title={t('manageAgents')}
+              description={t('overviewPage.quickActions.manageAgents')}
               color='violet'
             />
 
             <QuickAction
               href='/tasks'
               icon={ListTodo}
-              title='View Tasks'
-              description='Lihat semua task'
+              title={t('viewTasks')}
+              description={t('overviewPage.quickActions.viewTasks')}
               color='amber'
             />
           </div>
@@ -391,18 +394,20 @@ function AIOverview() {
 // ============================================================
 
 function EmptyAgents() {
+  const { t } = useTranslation()
+
   return (
     <div className='flex flex-col items-center justify-center rounded-lg border border-dashed py-10 text-center'>
       <Bot className='size-7 text-muted-foreground' />
 
-      <p className='mt-3 text-sm font-medium'>Belum ada Agent</p>
+      <p className='mt-3 text-sm font-medium'>{t('overviewPage.emptyAgents.title')}</p>
 
       <p className='mt-1 text-xs text-muted-foreground'>
-        Buat Agent terlebih dahulu.
+        {t('overviewPage.emptyAgents.description')}
       </p>
 
       <Link to='/ai/agents' className='mt-3 text-xs font-medium text-primary'>
-        Lihat Daftar Agent
+        {t('overviewPage.emptyAgents.viewAgents')}
       </Link>
     </div>
   )
@@ -413,6 +418,7 @@ function EmptyAgents() {
 // ============================================================
 
 function AgentCard({ agent }: { agent: Agent }) {
+  const { t } = useTranslation()
   const status = agent.status.toLowerCase()
 
   const isReady = status === 'ready' || status === 'idle'
@@ -439,15 +445,16 @@ function AgentCard({ agent }: { agent: Agent }) {
               />
 
               <span className='text-xs text-muted-foreground'>
-                {isReady ? 'Siap' : agent.status}
+                {isReady ? t('overviewPage.agentCard.ready') : agent.status}
               </span>
             </div>
           </div>
         </div>
 
         <span className='text-xs font-semibold'>
-          {agent.models.length} model
-          {agent.models.length !== 1 ? 's' : ''}
+          {t('overviewPage.modelCount', {
+            count: agent.models.length,
+          })}
         </span>
       </div>
 
@@ -482,6 +489,8 @@ function StatCard({
   href: '/ai/agents'
   color: 'blue' | 'violet' | 'amber' | 'emerald'
 }) {
+  const { t } = useTranslation()
+
   const colors = {
     blue: {
       icon: 'bg-blue-500/10 text-blue-600 dark:text-blue-400',
@@ -522,7 +531,7 @@ function StatCard({
       </div>
 
       <div className='mt-4 flex items-center text-xs font-medium text-muted-foreground'>
-        Buka halaman
+        {t('overviewPage.openPage')}
         <ArrowRight className='ms-1 size-3 transition-transform group-hover:translate-x-1' />
       </div>
     </Link>

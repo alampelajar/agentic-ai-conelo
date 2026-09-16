@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Bot, Check, ChevronDown, Cpu } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import { useAuthStore } from "@/stores/auth-store";
 
@@ -61,6 +62,8 @@ export function AgentSelector({
   selectedModel,
   onModelSelect,
 }: AgentSelectorProps) {
+  const { t } = useTranslation();
+
   const accessToken = useAuthStore((state) => state.auth.accessToken);
 
   const agentTriggerRef = useRef<HTMLButtonElement>(null);
@@ -131,7 +134,7 @@ export function AgentSelector({
 
         if (!response.ok) {
           throw new Error(
-            data?.error || data?.message || "Gagal mengambil Agent.",
+            data?.error || data?.message || t("agentSelector.errors.loadAgents"),
           );
         }
 
@@ -151,7 +154,7 @@ export function AgentSelector({
 
         setAgents([]);
 
-        setError(err instanceof Error ? err.message : "Gagal mengambil Agent.");
+        setError(err instanceof Error ? err.message : t("agentSelector.errors.loadAgents"));
       } finally {
         if (!cancelled) {
           setLoading(false);
@@ -399,7 +402,7 @@ export function AgentSelector({
               }}
             >
               <div className="border-b border-border px-5 py-4">
-                <h3 className="text-base font-semibold">Pilih Agent</h3>
+                <h3 className="text-base font-semibold">{t("agentSelector.selectAgent")}</h3>
 
                 <p className="mt-1 text-sm text-muted-foreground">
                   Pilih Agent yang ingin digunakan.
@@ -453,7 +456,7 @@ export function AgentSelector({
                         }`}
                       >
                         <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-border bg-background">
-                          <Bot className="h-5 w-5" />
+                          <Bot className="h-4 w-4" />
                         </div>
 
                         <div className="min-w-0 flex-1">
@@ -472,7 +475,7 @@ export function AgentSelector({
                           </p>
 
                           <p className="mt-1 text-xs text-muted-foreground">
-                            {modelCount} {modelCount === 1 ? "model" : "models"}
+                            {modelCount} {modelCount === 1 ? t("agentSelector.model") : t("agentSelector.models")}
                           </p>
                         </div>
 
@@ -518,11 +521,11 @@ export function AgentSelector({
                 <div className="flex items-center gap-2">
                   <Cpu className="h-4 w-4" />
 
-                  <h3 className="text-base font-semibold">Pilih Model</h3>
+                  <h3 className="text-base font-semibold">{t("agentSelector.modelDropdown.title")}</h3>
                 </div>
 
                 <p className="mt-1 text-sm text-muted-foreground">
-                  Pilih model untuk {selectedAgent.name}.
+                  {t("agentSelector.modelDropdown.forAgent")} {selectedAgent.name}.
                 </p>
               </div>
 
@@ -580,7 +583,7 @@ export function AgentSelector({
                           </p>
 
                           <p className="mt-1 truncate text-xs text-muted-foreground">
-                            {model.provider?.name || "Unknown Provider"}
+                            {model.provider?.name || t("agentSelector.unknownProvider")}
                           </p>
                         </div>
 
@@ -605,7 +608,7 @@ export function AgentSelector({
   // ============================================================
 
   return (
-    <div className="space-y-2">
+    <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
       {/* ========================================================
           AGENT
       ======================================================== */}
@@ -618,35 +621,35 @@ export function AgentSelector({
 
           setOpenAgent((value) => !value);
         }}
-        className="flex w-full items-center gap-4 rounded-2xl border border-border bg-background px-4 py-3 text-left shadow-sm transition-colors hover:bg-accent/40"
+        className="flex min-w-0 flex-1 items-center gap-3 rounded-md border border-border/70 bg-background/60 px-3 py-2 text-left transition-colors hover:bg-muted/40"
       >
-        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-border bg-muted/30">
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-border/70 bg-muted/30">
           <Bot className="h-5 w-5" />
         </div>
 
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <span className="truncate text-base font-semibold">
-              {selectedAgent ? selectedAgent.name : "No Agent Selected"}
+            <span className="truncate text-sm font-medium">
+              {selectedAgent ? selectedAgent.name : t("agentSelector.noAgentSelected")}
             </span>
 
             {selectedAgent && (
               <>
                 <span className="h-2 w-2 shrink-0 rounded-full bg-emerald-500" />
 
-                <span className="shrink-0 text-sm text-muted-foreground">
+                <span className="shrink-0 text-xs text-muted-foreground">
                   {selectedAgent.status === "ready"
-                    ? "Siap"
+                    ? t("agentSelector.ready")
                     : selectedAgent.status}
                 </span>
               </>
             )}
           </div>
 
-          <p className="truncate text-sm text-muted-foreground">
+          <p className="truncate text-xs text-muted-foreground">
             {selectedAgent
               ? selectedAgent.description
-              : "Pilih Agent yang ingin digunakan."}
+              : t("agentSelector.selectAgent")}
           </p>
         </div>
 
@@ -670,21 +673,21 @@ export function AgentSelector({
 
             setOpenModel((value) => !value);
           }}
-          className="flex w-full items-center gap-3 rounded-xl border border-border bg-background px-4 py-2.5 text-left transition-colors hover:bg-accent/40"
+          className="flex min-w-0 flex-1 items-center gap-2 rounded-md border border-border/70 bg-background/60 px-3 py-2 text-left transition-colors hover:bg-muted/40"
         >
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted/40">
+          <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-muted/40">
             <Cpu className="h-4 w-4" />
           </div>
 
           <div className="min-w-0 flex-1">
             <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-              Model
+              {t("agentSelector.model")}
             </p>
 
             <p className="truncate text-sm font-medium">
               {internalSelectedModel
                 ? internalSelectedModel.name
-                : "Pilih Model"}
+                : t("agentSelector.modelDropdown.title")}
             </p>
           </div>
 

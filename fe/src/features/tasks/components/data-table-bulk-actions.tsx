@@ -4,7 +4,6 @@ import { Trash2, CircleArrowUp, ArrowUpDown, Download } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 
-import { sleep } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -22,6 +21,7 @@ import { DataTableBulkActions as BulkActionsToolbar } from "@/components/data-ta
 import { priorities, statuses } from "../data/data";
 import { type Task } from "../data/schema";
 import { TasksMultiDeleteDialog } from "./tasks-multi-delete-dialog";
+import { updateTask } from "../data/api";
 
 type DataTableBulkActionsProps<TData> = {
   table: Table<TData>;
@@ -36,46 +36,34 @@ export function DataTableBulkActions<TData>({
 
   const selectedRows = table.getFilteredSelectedRowModel().rows;
 
-  const handleBulkStatusChange = (status: string) => {
+  const handleBulkStatusChange = async (status: string) => {
     const selectedTasks = selectedRows.map((row) => row.original as Task);
-
-    toast.promise(sleep(2000), {
-      loading: t("tasksPage.bulk.loadingStatus"),
-
-      success: () => {
-        table.resetRowSelection();
-
-        return t("tasksPage.bulk.statusUpdated", {
-          status: t(`tasksPage.statuses.${status}`),
-          count: selectedTasks.length,
-        });
-      },
-
-      error: t("tasksPage.bulk.error"),
-    });
-
-    table.resetRowSelection();
+    try {
+      await Promise.all(selectedTasks.map((task) => updateTask(task.id, { status })));
+      toast.success(t("tasksPage.bulk.statusUpdated", {
+        status: t(`tasksPage.statuses.${status}`),
+        count: selectedTasks.length,
+      }));
+      table.resetRowSelection();
+      window.dispatchEvent(new CustomEvent("tasks:refresh"));
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : t("tasksPage.bulk.error"));
+    }
   };
 
-  const handleBulkPriorityChange = (priority: string) => {
+  const handleBulkPriorityChange = async (priority: string) => {
     const selectedTasks = selectedRows.map((row) => row.original as Task);
-
-    toast.promise(sleep(2000), {
-      loading: t("tasksPage.bulk.loadingPriority"),
-
-      success: () => {
-        table.resetRowSelection();
-
-        return t("tasksPage.bulk.priorityUpdated", {
-          priority: t(`tasksPage.priorities.${priority}`),
-          count: selectedTasks.length,
-        });
-      },
-
-      error: t("tasksPage.bulk.error"),
-    });
-
-    table.resetRowSelection();
+    try {
+      await Promise.all(selectedTasks.map((task) => updateTask(task.id, { priority })));
+      toast.success(t("tasksPage.bulk.priorityUpdated", {
+        priority: t(`tasksPage.priorities.${priority}`),
+        count: selectedTasks.length,
+      }));
+      table.resetRowSelection();
+      window.dispatchEvent(new CustomEvent("tasks:refresh"));
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : t("tasksPage.bulk.error"));
+    }
   };
 
   const handleBulkExport = () => {

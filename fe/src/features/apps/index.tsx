@@ -1,6 +1,7 @@
 import { type ChangeEvent, useEffect, useState } from "react";
 import { getRouteApi } from "@tanstack/react-router";
 import { ArrowDownAZ, ArrowUpAZ, SlidersHorizontal } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,13 +22,11 @@ const route = getRouteApi("/_authenticated/apps/");
 
 type AppType = "all" | "connected" | "notConnected";
 
-const appText = new Map<AppType, string>([
-  ["all", "All Apps"],
-  ["connected", "Connected"],
-  ["notConnected", "Not Connected"],
-]);
+
 
 export function Apps() {
+  const { t } = useTranslation();
+
   const {
     filter = "",
     type = "all",
@@ -185,7 +184,7 @@ export function Apps() {
               dark:text-violet-400
             "
           >
-            AI Integrations
+            {t("appsPage.badge")}
           </div>
 
           {/* Title */}
@@ -198,7 +197,7 @@ export function Apps() {
               sm:text-3xl
             "
           >
-            AI Tools & Integrations
+            {t("appsPage.title")}
           </h1>
 
           {/* Description */}
@@ -212,8 +211,7 @@ export function Apps() {
               sm:text-base
             "
           >
-            Connect AI models, databases, automation services, and external
-            applications.
+            {t("appsPage.description")}
           </p>
         </div>
 
@@ -245,7 +243,7 @@ export function Apps() {
             {/* Search */}
 
             <Input
-              placeholder="Filter apps..."
+              placeholder={t("appsPage.filterPlaceholder")}
               className="
                 h-10
                 w-full
@@ -266,15 +264,15 @@ export function Apps() {
                   sm:w-40
                 "
               >
-                <SelectValue>{appText.get(appType)}</SelectValue>
+                <SelectValue>{t(`appsPage.filters.${appType}`)}</SelectValue>
               </SelectTrigger>
 
               <SelectContent>
-                <SelectItem value="all">All Apps</SelectItem>
+                <SelectItem value="all">{t("appsPage.filters.all")}</SelectItem>
 
-                <SelectItem value="connected">Connected</SelectItem>
+                <SelectItem value="connected">{t("appsPage.filters.connected")}</SelectItem>
 
-                <SelectItem value="notConnected">Not Connected</SelectItem>
+                <SelectItem value="notConnected">{t("appsPage.filters.notConnected")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -299,7 +297,7 @@ export function Apps() {
                 <div className="flex items-center gap-3">
                   <ArrowUpAZ size={16} />
 
-                  <span>Ascending</span>
+                  <span>{t("appsPage.sort.ascending")}</span>
                 </div>
               </SelectItem>
 
@@ -307,7 +305,7 @@ export function Apps() {
                 <div className="flex items-center gap-3">
                   <ArrowDownAZ size={16} />
 
-                  <span>Descending</span>
+                  <span>{t("appsPage.sort.descending")}</span>
                 </div>
               </SelectItem>
             </SelectContent>
@@ -419,7 +417,7 @@ export function Apps() {
                       }
                     `}
                   >
-                    {app.connected ? "Connected" : "Connect"}
+                    {app.connected ? t("appsPage.connected") : t("appsPage.connect")}
                   </Button>
                 </div>
 
@@ -446,7 +444,7 @@ export function Apps() {
                       text-muted-foreground
                     "
                   >
-                    {app.desc}
+                    {t(app.desc)}
                   </p>
                 </div>
 
@@ -476,7 +474,7 @@ export function Apps() {
                       }
                     `}
                   >
-                    {app.connected ? "Integration active" : "Ready to connect"}
+                    {app.connected ? t("appsPage.integrationActive") : t("appsPage.readyToConnect")}
                   </span>
 
                   <span
@@ -485,7 +483,7 @@ export function Apps() {
                       text-muted-foreground
                     "
                   >
-                    AI Tool
+                    {t("appsPage.aiTool")}
                   </span>
                 </div>
               </li>
@@ -520,7 +518,7 @@ export function Apps() {
                 <SlidersHorizontal className="size-5 text-muted-foreground" />
               </div>
 
-              <h3 className="font-semibold">No apps found</h3>
+              <h3 className="font-semibold">{t("appsPage.empty.title")}</h3>
 
               <p
                 className="
@@ -529,7 +527,7 @@ export function Apps() {
                   text-muted-foreground
                 "
               >
-                Try changing your search or filter.
+                {t("appsPage.empty.description")}
               </p>
             </div>
           </div>
@@ -544,3 +542,5 @@ export function Apps() {
 }
 
 export default Apps;
+
+ 
