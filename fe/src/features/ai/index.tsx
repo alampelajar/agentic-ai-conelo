@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { useSearch } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import {
   Check,
@@ -12,6 +13,7 @@ import {
   X,
 } from 'lucide-react'
 import { useAuthStore } from '@/stores/auth-store'
+import { addTaskMessage, createTask, getTaskMessages, getTasks, updateTask } from '@/features/tasks/data/api'
 import { Main } from '@/components/layout/main'
 import { PageLoading } from '@/components/layout/page-loading'
 import {
@@ -19,12 +21,9 @@ import {
   type Agent,
   type AgentModel,
 } from './components/agent-selector'
-import {
-  useAgentTasks,
-  type AgentTask,
-} from './components/agent-tasks-provider'
 
 const API_URL = 'http://localhost:8080'
+
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024
 
@@ -104,9 +103,11 @@ function formatFileSize(size: number) {
 
 export function AIAssistant() {
   const { t } = useTranslation()
-  const { addTasks } = useAgentTasks()
-
   const accessToken = useAuthStore((state) => state.auth.accessToken)
+
+  const { task: routeTaskId } = useSearch({
+    from: '/_authenticated/ai/',
+  })
 
   // ============================================================
   // STATE
@@ -133,6 +134,7 @@ export function AIAssistant() {
   const [currentTaskId, setCurrentTaskId] = useState<string | null>(null)
 
   const [taskTitle, setTaskTitle] = useState('')
+  const [historyLoading, setHistoryLoading] = useState(false)
 
   const fileInputRef = useRef<HTMLInputElement | null>(null)
 
@@ -149,6 +151,160 @@ export function AIAssistant() {
 
     return () => clearTimeout(timer)
   }, [])
+
+  // ============================================================
+  // LOAD CHAT HISTORY FROM TASK
+  // ============================================================
+
+  useEffect(() => {
+    const taskId = routeTaskId
+
+    // Tidak ada task berarti halaman New Chat.
+    if (!taskId) {
+      clearGeneratedUrls()
+      setMessages([])
+      setCurrentTaskId(null)
+      setTaskTitle('')
+      setHistoryLoading(false)
+      return
+    }
+
+    // Tunggu sampai token tersedia.
+    if (!accessToken) {
+      return
+    }
+
+    let cancelled = false
+
+    const loadConversation = async () => {
+      setHistoryLoading(true)
+
+      try {
+        console.log('[AI] Opening task:', taskId)
+
+        const tasks = await getTasks()
+
+        if (cancelled) return
+
+        const task = tasks.find(
+          (item) => String(item.id) === String(taskId)
+        )
+
+        if (!task) {
+          throw new Error(`Percakapan Task #${taskId} tidak ditemukan.`)
+        }
+
+        console.log('[AI] Task found:', task)
+
+        const storedMessages = await getTaskMessages(task.id)
+
+        if (cancelled) return
+
+        console.log('[AI] Messages loaded:', storedMessages.length)
+
+        clearGeneratedUrls()
+
+        setCurrentTaskId(String(task.id))
+        setTaskTitle(task.title)
+
+        setMessages(
+          storedMessages.map((item) => ({
+            id: item.id,
+            role: item.role === 'user' ? 'user' : 'agent',
+            content: item.content,
+            model: item.model,
+            modelId: item.model_id ?? undefined,
+            provider: item.provider,
+          }))
+        )
+
+        // Restore Agent + Model yang digunakan Task sebelumnya.
+        if (task.agent_id) {
+          const agentResponse = await fetch(
+            `${API_URL}/api/agents/${task.agent_id}`,
+            {
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+              },
+            }
+          )
+
+          const agentData = await agentResponse
+            .json()
+            .catch(() => ({}))
+
+          if (
+            !cancelled &&
+            agentResponse.ok &&
+            agentData?.agent
+          ) {
+            const agent = agentData.agent as Agent
+
+            setSelectedAgent(agent)
+
+            const model =
+              agent.models?.find(
+                (item) => item.id === task.model_id
+              ) ??
+              agent.models?.[0] ??
+              null
+
+            setSelectedModel(model)
+          }
+        }
+      } catch (error) {
+        if (!cancelled) {
+          console.error('[AI HISTORY ERROR]', error)
+
+          addAgentMessage(
+            error instanceof Error
+              ? error.message
+              : 'Gagal membuka riwayat chat.'
+          )
+        }
+      } finally {
+        if (!cancelled) {
+          setHistoryLoading(false)
+        }
+      }
+    }
+
+    void loadConversation()
+
+    return () => {
+      cancelled = true
+    }
+  }, [accessToken, routeTaskId])
+
+  const ensureConversationTask = async (fallbackTitle: string) => {
+    if (currentTaskId) return currentTaskId
+    if (!selectedAgent) throw new Error('Agent belum dipilih.')
+
+    const created = await createTask({
+      title: (taskTitle.trim() || fallbackTitle.trim()).slice(0, 255) || 'New AI Chat',
+      description: taskTitle.trim() || fallbackTitle.trim(),
+      status: 'in progress',
+      label: 'feature',
+      priority: 'medium',
+      agent_id: selectedAgent.id,
+      model_id: selectedModel?.id ?? null,
+    })
+
+    const id = String(created.id)
+    setCurrentTaskId(id)
+    setTaskTitle(created.title)
+    return id
+  }
+
+  const persistMessage = async (taskId: string, role: 'user' | 'assistant', content: string, options?: { model?: string; modelId?: number; provider?: string }) => {
+    await addTaskMessage(taskId, {
+      role,
+      content,
+      model: options?.model ?? '',
+      model_id: options?.modelId ?? null,
+      provider: options?.provider ?? '',
+    })
+  }
 
   // ============================================================
   // CLEANUP GENERATED URL
@@ -227,6 +383,10 @@ export function AIAssistant() {
 
     setCurrentTaskId(null)
     setTaskTitle('')
+
+    const url = new URL(window.location.href)
+    url.searchParams.delete('task')
+    window.history.replaceState({}, '', `${url.pathname}${url.search}${url.hash}`)
   }
 
   // ============================================================
@@ -300,7 +460,9 @@ export function AIAssistant() {
       )
     }
 
-    return data
+    // Backend dapat mengembalikan plan langsung atau
+    // membungkusnya di dalam { plan: ... }.
+    return data?.plan ?? data
   }
 
   // ============================================================
@@ -315,60 +477,18 @@ export function AIAssistant() {
     modelId?: number
   ): Promise<ChatResult> => {
     const formData = new FormData()
-
-    // ----------------------------------------------------------
-    // MESSAGE
-    // ----------------------------------------------------------
-
     formData.append('message', text)
-
-    // ----------------------------------------------------------
-    // HISTORY
-    // ----------------------------------------------------------
-
     formData.append('history', JSON.stringify(history))
-
-    // ----------------------------------------------------------
-    // AGENT ID
-    // ----------------------------------------------------------
-
     formData.append('agent_id', String(agentId))
-
-    // ----------------------------------------------------------
-    // MODEL ID
-    // ----------------------------------------------------------
 
     if (modelId && modelId > 0) {
       formData.append('model_id', String(modelId))
     }
 
-    // ----------------------------------------------------------
-    // IMAGES
-    // ----------------------------------------------------------
-
-    files.forEach((file) => {
-      formData.append('images', file)
-    })
-
-    // ----------------------------------------------------------
-    // HEADERS
-    // ----------------------------------------------------------
+    files.forEach((file) => formData.append('images', file))
 
     const headers: HeadersInit = {}
-
-    if (accessToken) {
-      headers.Authorization = `Bearer ${accessToken}`
-    }
-
-    // ----------------------------------------------------------
-    // REQUEST
-    // ----------------------------------------------------------
-
-    console.log('[CHAT REQUEST]', {
-      agentId,
-      modelId,
-      message: text,
-    })
+    if (accessToken) headers.Authorization = `Bearer ${accessToken}`
 
     const response = await fetch(`${API_URL}/api/chat`, {
       method: 'POST',
@@ -376,55 +496,23 @@ export function AIAssistant() {
       body: formData,
     })
 
-    // ----------------------------------------------------------
-    // RESPONSE JSON
-    // ----------------------------------------------------------
-
-    const data = await response.json()
-
-    // ----------------------------------------------------------
-    // ERROR
-    // ----------------------------------------------------------
+    const data = await response.json().catch(() => ({}))
 
     if (!response.ok) {
-      throw new Error(
-        data?.error || data?.message || t('agentic.errors.chatFailed')
-      )
+      throw new Error(data?.error || data?.message || t('agentic.errors.chatFailed'))
     }
-
-    // ----------------------------------------------------------
-    // VALIDATE MESSAGE
-    // ----------------------------------------------------------
 
     if (!data?.message) {
       throw new Error(t('agentic.errors.emptyResponse'))
     }
 
-    // ----------------------------------------------------------
-    // NORMALIZE RESULT
-    // ----------------------------------------------------------
-
-    const result: ChatResult = {
+    return {
       message: String(data.message),
-
       model: String(data.model || selectedModel?.model_id || 'unknown'),
-
       modelId: Number(data.model_id || modelId || 0),
-
-      provider: String(
-        data.provider || selectedModel?.provider?.name || 'Unknown Provider'
-      ),
-
+      provider: String(data.provider || selectedModel?.provider?.name || 'Unknown Provider'),
       agentId: Number(data.agent_id || agentId),
     }
-
-    // ----------------------------------------------------------
-    // DEBUG
-    // ----------------------------------------------------------
-
-    console.log('[CHAT RESPONSE]', result)
-
-    return result
   }
 
   // ============================================================
@@ -432,10 +520,6 @@ export function AIAssistant() {
   // ============================================================
 
   const sendGenerator = async (text: string, agent: Agent, files: File[]) => {
-    const taskId = `TASK-${String(Date.now()).slice(-5)}`
-
-    setCurrentTaskId(taskId)
-
     setTaskTitle(text)
 
     // --------------------------------------------------------
@@ -546,17 +630,6 @@ export function AIAssistant() {
     setCurrentStep('done')
     setProgress(100)
 
-    const completedTask: AgentTask = {
-      id: taskId,
-      title: text,
-      status: 'done',
-      label: 'feature',
-      priority: 'medium',
-      description: text,
-    }
-
-    addTasks([completedTask])
-
     return generatedFile
   }
 
@@ -567,71 +640,39 @@ export function AIAssistant() {
   const handleSend = async () => {
     const text = message.trim()
 
-    // --------------------------------------------------------
-    // VALIDATION
-    // --------------------------------------------------------
-
-    if (!text || !selectedAgent || !selectedModel || running) {
-      return
-    }
+    if (!text || !selectedAgent || !selectedModel || running || historyLoading) return
 
     const files = [...selectedFiles]
-
-    // --------------------------------------------------------
-    // HISTORY BEFORE CURRENT MESSAGE
-    // --------------------------------------------------------
-
     const history: ChatHistoryItem[] = messages.map((item) => ({
       role: item.role === 'user' ? 'user' : 'assistant',
-
       content: item.content,
     }))
 
-    // --------------------------------------------------------
-    // SHOW USER MESSAGE
-    // --------------------------------------------------------
-
     setMessages((current) => [
       ...current,
-      {
-        id: Date.now(),
-
-        role: 'user',
-
-        content: text,
-      },
+      { id: Date.now(), role: 'user', content: text },
     ])
-
     setMessage('')
     setSelectedFiles([])
-
+    setTaskTitle((current) => current || text)
     setRunning(true)
 
+    let taskId: string | null = null
+
     try {
-      // ======================================================
-      // PLAN
-      // ======================================================
+      taskId = await ensureConversationTask(text)
+
+      await persistMessage(taskId, 'user', text)
 
       const plan = await planAgent(text, history, files.length > 0)
 
-      console.log('[AGENT PLAN]', plan)
-
-      // ======================================================
-      // GENERATOR
-      // ======================================================
-
       if (plan.intent === 'generator') {
         const generated = await sendGenerator(text, selectedAgent, files)
+        const content = t('agentic.messages.websiteCreated')
 
-        addAgentMessage(t('agentic.messages.websiteCreated'), {
-          file: generated,
-        })
-      }
-
-      // ======================================================
-      // NORMAL CHAT
-      // ======================================================
-      else {
+        addAgentMessage(content, { file: generated })
+        await persistMessage(taskId, 'assistant', content)
+      } else {
         const result = await sendChat(
           text,
           files,
@@ -642,20 +683,34 @@ export function AIAssistant() {
 
         addAgentMessage(result.message, {
           model: result.model,
-
           modelId: result.modelId,
+          provider: result.provider,
+        })
 
+        await persistMessage(taskId, 'assistant', result.message, {
+          model: result.model,
+          modelId: result.modelId,
           provider: result.provider,
         })
       }
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : t('agentic.errors.generic')
 
+      await updateTask(taskId, { status: 'done', model_id: selectedModel.id })
+      window.dispatchEvent(new Event('tasks:refresh'))
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : t('agentic.errors.generic')
       addAgentMessage(`Maaf, terjadi kesalahan.\n\n${errorMessage}`)
+
+      if (taskId) {
+        try {
+          await persistMessage(taskId, 'assistant', `Maaf, terjadi kesalahan.\n\n${errorMessage}`)
+          await updateTask(taskId, { status: 'canceled' })
+          window.dispatchEvent(new Event('tasks:refresh'))
+        } catch (persistError) {
+          console.error('[TASK ERROR]', persistError)
+        }
+      }
     } finally {
       setRunning(false)
-
       setTimeout(() => {
         setCurrentStep(null)
         setProgress(0)

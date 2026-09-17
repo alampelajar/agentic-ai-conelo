@@ -1,4 +1,5 @@
 import { DotsHorizontalIcon } from "@radix-ui/react-icons";
+import { MessageSquare } from "lucide-react";
 import { type Row } from "@tanstack/react-table";
 import { Trash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -56,6 +57,15 @@ export function DataTableRowActions<TData>({
           }}
         >
           {t("tasksPage.edit")}
+        </DropdownMenuItem>
+
+        <DropdownMenuItem
+          onClick={() => {
+            window.location.assign(`/ai?task=${encodeURIComponent(task.id)}`);
+          }}
+        >
+          <MessageSquare className="mr-2 size-4" />
+          {t("tasksPage.openChat")}
         </DropdownMenuItem>
 
         <DropdownMenuItem disabled>{t("tasksPage.makeCopy")}</DropdownMenuItem>

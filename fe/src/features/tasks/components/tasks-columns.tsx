@@ -73,7 +73,16 @@ export const tasksColumns: ColumnDef<Task>[] = [
         <div className="flex space-x-2">
           {label && <Badge variant="outline">{label.label}</Badge>}
 
-          <span className="truncate font-medium">{row.getValue("title")}</span>
+          <button
+            type="button"
+            className="truncate font-medium text-left hover:underline hover:underline-offset-4"
+            onClick={() => {
+              window.location.assign(`/ai?task=${encodeURIComponent(String(row.original.id))}`)
+            }}
+            title={i18n.t("tasksPage.openChat")}
+          >
+            {row.getValue("title")}
+          </button>
         </div>
       );
     },

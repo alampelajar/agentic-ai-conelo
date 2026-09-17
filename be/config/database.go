@@ -59,15 +59,16 @@ func ConnectDatabase() {
 
 	DB = db
 
-err = DB.AutoMigrate(
-	&models.User{},
-	&models.RefreshToken{},
-	&models.AIProvider{},
-	&models.AIModel{},
-	&models.Agent{},
-	&models.AgentModel{},
-	&models.Task{},
-)
+	err = DB.AutoMigrate(
+		&models.User{},
+		&models.RefreshToken{},
+		&models.AIProvider{},
+		&models.AIModel{},
+		&models.Agent{},
+		&models.AgentModel{},
+		&models.Task{},
+		&models.TaskMessage{},
+	)
 
 	if err != nil {
 		log.Fatal(
