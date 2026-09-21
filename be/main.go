@@ -332,34 +332,44 @@ func main() {
 	// ADMIN
 	// ============================================================
 
-	admin := api.Group("/admin")
+admin := api.Group("/admin")
 
-	admin.Use(
-		middleware.AuthMiddleware(),
+{
+	admin.POST(
+		"/login",
+		handlers.AdminLogin,
+	)
+}
+
+admin.Use(
+	middleware.AuthMiddleware(),
+)
+
+{
+	admin.GET(
+		"/users",
+		handlers.AdminGetUsers,
+	)
+	admin.GET(
+	"/tasks",
+	handlers.AdminGetTasks,
+)
+
+	admin.POST(
+		"/users",
+		handlers.AdminCreateUser,
 	)
 
-	{
-		admin.GET(
-			"/users",
-			handlers.AdminGetUsers,
-		)
+	admin.PUT(
+		"/users/:id",
+		handlers.AdminUpdateUser,
+	)
 
-		admin.POST(
-			"/users",
-			handlers.AdminCreateUser,
-		)
-
-		admin.PUT(
-			"/users/:id",
-			handlers.AdminUpdateUser,
-		)
-
-		admin.DELETE(
-			"/users/:id",
-			handlers.AdminDeleteUser,
-		)
-	}
-
+	admin.DELETE(
+		"/users/:id",
+		handlers.AdminDeleteUser,
+	)
+}
 	// ============================================================
 	// PORT
 	// ============================================================
@@ -367,7 +377,7 @@ func main() {
 	port := os.Getenv("PORT")
 
 	if port == "" {
-		port = "8080"
+		port = "8081"
 	}
 
 	fmt.Printf(

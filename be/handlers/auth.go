@@ -172,8 +172,6 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	// Jika role kosong karena user lama,
-	// anggap sebagai user biasa.
 	if user.Role == "" {
 		user.Role = "user"
 
@@ -181,6 +179,7 @@ func Login(c *gin.Context) {
 			Model(&user).
 			Update("role", "user").
 			Error; err != nil {
+
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"ok":      false,
 				"message": "Gagal memperbarui role pengguna",
@@ -242,8 +241,134 @@ func Login(c *gin.Context) {
 	)
 
 	c.JSON(http.StatusOK, gin.H{
+	"ok":           true,
+	"message":      "Login berhasil",
+	"access_token": accessToken,
+	"user": gin.H{
+		"id":     user.ID,
+		"name":   user.Name,
+		"email":  user.Email,
+		"avatar": user.Avatar,
+		"role":   user.Role,
+	},
+})
+}
+
+// ============================================================
+// ADMIN LOGIN
+// ============================================================
+
+func AdminLogin(c *gin.Context) {
+	var req LoginRequest
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"ok":      false,
+			"message": "Format JSON tidak valid",
+		})
+		return
+	}
+
+	req.Email = strings.TrimSpace(strings.ToLower(req.Email))
+
+	if req.Email == "" || req.Password == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"ok":      false,
+			"message": "Email dan password wajib diisi",
+		})
+		return
+	}
+
+	var user models.User
+
+	result := config.DB.
+		Where("email = ?", req.Email).
+		First(&user)
+
+	if result.Error != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"ok":      false,
+			"message": "Email atau password salah",
+		})
+		return
+	}
+
+	if user.Role != "admin" {
+		c.JSON(http.StatusForbidden, gin.H{
+			"ok":      false,
+			"message": "Akun ini bukan akun admin",
+		})
+		return
+	}
+
+	err := bcrypt.CompareHashAndPassword(
+		[]byte(user.Password),
+		[]byte(req.Password),
+	)
+
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"ok":      false,
+			"message": "Email atau password salah",
+		})
+		return
+	}
+
+	accessToken, err := utils.GenerateAccessToken(
+		user.ID,
+		user.Email,
+		user.Role,
+	)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"ok":      false,
+			"message": "Gagal membuat access token",
+		})
+		return
+	}
+
+	refreshToken, err := utils.GenerateRefreshToken(
+		user.ID,
+		user.Email,
+		user.Role,
+	)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"ok":      false,
+			"message": "Gagal membuat refresh token",
+		})
+		return
+	}
+
+	refreshTokenModel := models.RefreshToken{
+		UserID:    user.ID,
+		TokenHash: hashToken(refreshToken),
+		ExpiredAt: time.Now().Add(7 * 24 * time.Hour),
+	}
+
+	if err := config.DB.Create(&refreshTokenModel).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"ok":      false,
+			"message": "Gagal menyimpan refresh token",
+		})
+		return
+	}
+
+	c.SetCookie(
+		"refresh_token",
+		refreshToken,
+		7*24*60*60,
+		"/",
+		"",
+		false,
+		true,
+	)
+
+	c.JSON(http.StatusOK, gin.H{
 		"ok":           true,
-		"message":      "Login berhasil",
+		"message":      "Login admin berhasil",
 		"access_token": accessToken,
 		"user": gin.H{
 			"id":     user.ID,
@@ -327,6 +452,7 @@ func Refresh(c *gin.Context) {
 			Model(&user).
 			Update("role", "user").
 			Error; err != nil {
+
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"ok":      false,
 				"message": "Gagal memperbarui role pengguna",

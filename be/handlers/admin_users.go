@@ -17,6 +17,67 @@ import (
 // GET /api/admin/users
 // ============================================================
 
+type AgentSummary struct {
+	ID        uint   `json:"id"`
+	Name      string `json:"name"`
+	Slug      string `json:"slug"`
+	TaskCount int64  `json:"task_count"`
+}
+
+type UserResponse struct {
+	ID        uint           `json:"id"`
+	Name      string         `json:"name"`
+	Email     string         `json:"email"`
+	Avatar    string         `json:"avatar"`
+	Role      string         `json:"role"`
+	Agents    []AgentSummary `json:"agents"`
+	CreatedAt string         `json:"created_at"`
+	UpdatedAt string         `json:"updated_at"`
+}
+
+func getAgentsUsedByUser(userID uint) ([]AgentSummary, error) {
+	var agents []AgentSummary
+
+	err := config.DB.
+		Table("tasks AS t").
+		Select(`
+			a.id,
+			a.name,
+			a.slug,
+			COUNT(t.id) AS task_count
+		`).
+		Joins(`
+			INNER JOIN agents AS a
+				ON a.id = t.agent_id
+		`).
+		Where(
+			"t.user_id = ?",
+			userID,
+		).
+		Where(
+			"a.is_active = ?",
+			true,
+		).
+		Group(
+			"a.id, a.name, a.slug",
+		).
+		Order(
+			"a.name ASC",
+		).
+		Scan(&agents).
+		Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	if agents == nil {
+		agents = make([]AgentSummary, 0)
+	}
+
+	return agents, nil
+}
+
 func AdminGetUsers(c *gin.Context) {
 	var users []models.User
 
@@ -31,25 +92,28 @@ func AdminGetUsers(c *gin.Context) {
 		return
 	}
 
-	type UserResponse struct {
-		ID        uint   `json:"id"`
-		Name      string `json:"name"`
-		Email     string `json:"email"`
-		Avatar    string `json:"avatar"`
-		Role      string `json:"role"`
-		CreatedAt string `json:"created_at"`
-		UpdatedAt string `json:"updated_at"`
-	}
-
 	result := make([]UserResponse, 0, len(users))
 
 	for _, user := range users {
+		agents, err := getAgentsUsedByUser(user.ID)
+
+		if err != nil {
+			c.Error(err)
+
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"ok":      false,
+				"message": "Gagal mengambil data agent user",
+			})
+			return
+		}
+
 		result = append(result, UserResponse{
 			ID:        user.ID,
 			Name:      user.Name,
 			Email:     user.Email,
 			Avatar:    user.Avatar,
 			Role:      user.Role,
+			Agents:    agents,
 			CreatedAt: user.CreatedAt.Format("2006-01-02 15:04:05"),
 			UpdatedAt: user.UpdatedAt.Format("2006-01-02 15:04:05"),
 		})
@@ -331,7 +395,11 @@ func AdminUpdateUser(c *gin.Context) {
 	var emailUser models.User
 
 	err = config.DB.
-		Where("email = ? AND id <> ?", req.Email, user.ID).
+		Where(
+			"email = ? AND id <> ?",
+			req.Email,
+			user.ID,
+		).
 		First(&emailUser).
 		Error
 
