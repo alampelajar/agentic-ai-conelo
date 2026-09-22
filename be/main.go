@@ -122,10 +122,20 @@ func main() {
 	api := router.Group("/api")
 
 	// ============================================================
+	// PUBLIC SYSTEM ROUTES
+	// ============================================================
+
+	api.GET(
+		"/system/maintenance",
+		handlers.GetMaintenanceStatus,
+	)
+
+	// ============================================================
 	// AUTH
 	// ============================================================
 
 	auth := api.Group("/auth")
+
 	{
 		auth.POST(
 			"/register",
@@ -332,44 +342,61 @@ func main() {
 	// ADMIN
 	// ============================================================
 
-admin := api.Group("/admin")
+	admin := api.Group("/admin")
 
-{
+	// ============================================================
+	// ADMIN LOGIN
+	// ============================================================
+
 	admin.POST(
 		"/login",
 		handlers.AdminLogin,
 	)
-}
 
-admin.Use(
-	middleware.AuthMiddleware(),
-)
+	// ============================================================
+	// ADMIN PROTECTED ROUTES
+	// ============================================================
 
-{
-	admin.GET(
-		"/users",
-		handlers.AdminGetUsers,
-	)
-	admin.GET(
-	"/tasks",
-	handlers.AdminGetTasks,
-)
-
-	admin.POST(
-		"/users",
-		handlers.AdminCreateUser,
+	admin.Use(
+		middleware.AuthMiddleware(),
 	)
 
-	admin.PUT(
-		"/users/:id",
-		handlers.AdminUpdateUser,
-	)
+	{
+		admin.GET(
+			"/users",
+			handlers.AdminGetUsers,
+		)
 
-	admin.DELETE(
-		"/users/:id",
-		handlers.AdminDeleteUser,
-	)
-}
+		admin.GET(
+			"/tasks",
+			handlers.AdminGetTasks,
+		)
+
+		admin.POST(
+			"/users",
+			handlers.AdminCreateUser,
+		)
+
+		admin.PUT(
+			"/users/:id",
+			handlers.AdminUpdateUser,
+		)
+
+		admin.DELETE(
+			"/users/:id",
+			handlers.AdminDeleteUser,
+		)
+
+		// ========================================================
+		// MAINTENANCE MODE
+		// ========================================================
+
+		admin.PUT(
+			"/settings/maintenance",
+			handlers.UpdateMaintenanceStatus,
+		)
+	}
+
 	// ============================================================
 	// PORT
 	// ============================================================
